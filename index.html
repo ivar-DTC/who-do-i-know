@@ -947,43 +947,41 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCOsKYQV1WBYvh
 // Put this new global tracker variable right above fetchRoadsData
 let GLOBAL_KNOWS_TOTAL = 0; 
 
- async function fetchRoadsData() {
+async function fetchRoadsData() {
   if (!currentMember) return;
   
   try {
     showLoading(true, "Synchronizing town roadmap configurations...");
     
-    // 1. Fetch our standard road progress tracking array matrix
-    const roadUrl = `${APPS_SCRIPT_URL}?action=roads&member=${encodeURIComponent(currentMember)}`;
-    const roadResponse = await fetch(roadUrl);
-    const roadData = await roadResponse.json();
+    // 1. Fetch live road progress calculated directly from Sheet1
+    const progressUrl = `${APPS_SCRIPT_URL}?action=progress&member=${encodeURIComponent(currentMember)}`;
+    const progressResponse = await fetch(progressUrl);
+    const progressData = await progressResponse.json();
     
-    // 2. Fetch high-level summary stats directly from our new spreadsheet tab!
+    // 2. Fetch summary stats for the header pills baseline
     const summaryUrl = `${APPS_SCRIPT_URL}?action=summary&member=${encodeURIComponent(currentMember)}`;
     const summaryResponse = await fetch(summaryUrl);
     const summaryData = await summaryResponse.json();
 
-    if (roadData && roadData.success && summaryData && summaryData.success) {
-      ALL_ROADS = roadData.roads;
-      console.log(`Successfully mapped ${ALL_ROADS.length} independent town grid corridors.`);
+    if (progressData && progressData.success && summaryData && summaryData.success) {
+      ALL_ROADS = progressData.roads;
+      console.log(`Live progress loaded for ${ALL_ROADS.length} roads.`);
       
-      // FIX: Force the global tracking variable to hold your true baseline sheet "yes" count!
       GLOBAL_KNOWS_TOTAL = parseInt(summaryData.yes, 10) || 0; 
-      console.log(`Verified global baseline 'Know' count injected from Sheet: ${GLOBAL_KNOWS_TOTAL}`);
+      console.log(`Baseline 'Know' count from sheet: ${GLOBAL_KNOWS_TOTAL}`);
       
       buildRoadDropdown(); 
-      updateStats(); // Force your layout header text to re-render using the new baseline numbers immediately!
+      updateStats();
     } else {
-      alert("Backend Data Sync Anomaly detected.");
+      alert("Could not load road progress from sheet.");
     }
   } catch (err) {
-    console.error("Network sync extraction fault:", err);
-    alert("Unable to securely synchronize road maps.");
+    console.error("fetchRoadsData error:", err);
+    alert("Unable to load road progress.");
   } finally {
     showLoading(false);
   }
 }
-
 
 // ─── EXTRACT SPECIFIC VOTERS FOR THE CURRENTLY TARGETED ROAD ────────────────
 // ─── EXTRACT SPECIFIC VOTERS FOR THE CURRENTLY TARGETED ROAD ────────────────
