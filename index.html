@@ -951,7 +951,7 @@ async function fetchRoadsData() {
   if (!currentMember) return;
   
   try {
-    showLoading(true, "Synchronizing town roadmap configurations...");
+    showLoading(true, "Synchronizing...");
     
     // 1. Fetch live road progress calculated directly from Sheet1
     const progressUrl = `${APPS_SCRIPT_URL}?action=progress&member=${encodeURIComponent(currentMember)}`;
@@ -990,7 +990,7 @@ async function loadVotersForRoad(roadName) {
   ACTIVE_ROAD = roadName;
   
   try {
-    showLoading(true, `Querying voter ledger logs for ${roadName}...`);
+    showLoading(true, `Querying voter logs for ${roadName}...`);
     
     // 1. Fetch data explicitly with the voters parameter tag
     const response = await fetch(`${APPS_SCRIPT_URL}?action=voters`);
@@ -1518,7 +1518,7 @@ function pauseGame() {
   document.getElementById('pause-screen').style.display = 'flex';
 
   document.getElementById('pause-message').textContent =
-    `Your progress is saved, ${memberName}. You've reviewed ${totalReviewed} voters with ${remaining} still to go. Come back anytime — you'll pick up right where you left off.`;
+    `Your progress is saved, ${memberName}. Come back anytime — you'll pick up right where you left off.`;
 
   document.getElementById('pause-know').textContent = counts.know;
   document.getElementById('pause-maybe').textContent = counts.maybe;
