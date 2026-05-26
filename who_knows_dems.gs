@@ -1,1549 +1,821 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Woodstock DTC · Neighbor Network</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --navy: #497AD2;
-    --blue: #2a4494;
-    --gold: #FFC13A;
-    --cream: #EFF5FB;
-    --sage: #7a9e7e;
-    --red: #c0392b;
-    --light: #EFF5FB;
-    --mid: #e8e2d6;
-    --text: #2c2c2c;
-    --muted: #7a7468;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--light);
-    color: var(--text);
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* HEADER */
-  header {
-    background: var(--navy);
-    padding: 18px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 3px solid var(--gold);
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .logo-img {
-    height: 64px;
-    width: auto;
-  }
-
-  .logo-text {
-    font-family: 'Playfair Display', serif;
-    color: white;
-    font-size: 1.3rem;
-    font-weight: 700;
-    line-height: 1.2;
-  }
-
-  .logo-text span {
-    display: block;
-    font-size: 0.8rem;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    color: #e2e8f0;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .header-stats {
-    display: flex;
-    gap: 24px;
-  }
-
-  .stat-pill {
-    text-align: center;
-    color: white;
-  }
-
-  .stat-pill .num {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--gold);
-    display: block;
-  }
-
-  .stat-pill .lbl {
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #e2e8f0;
-  }
-
-
-  /* MEMBER SELECT SCREEN */
-  #member-screen {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 48px 24px;
-  }
-
-  .welcome-card {
-    background: white;
-    border: 1px solid var(--mid);
-    border-radius: 4px;
-    padding: 48px;
-    max-width: 480px;
-    width: 100%;
-    box-shadow: 0 4px 24px rgba(26,39,68,0.08);
-  }
-
-  .welcome-card h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    color: var(--navy);
-    margin-bottom: 8px;
-  }
-
-  .welcome-card p {
-    color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 32px;
-  }
-
-  .welcome-card label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--navy);
-    margin-bottom: 8px;
-  }
-
-  .welcome-card select {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid var(--mid);
-    border-radius: 3px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    color: var(--text);
-    background: white;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7468' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    margin-bottom: 24px;
-  }
-
-  .welcome-card select:focus {
-    outline: none;
-    border-color: var(--blue);
-  }
-
-  .btn-primary {
-    width: 100%;
-    padding: 14px;
-    background: var(--navy);
-    color: white;
-    border: none;
-    border-radius: 3px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    letter-spacing: 0.02em;
-  }
-
-  .btn-primary:hover { background: var(--blue); }
-  .btn-primary:active { transform: scale(0.99); }
-  .btn-primary:disabled { background: var(--mid); color: var(--muted); cursor: default; }
-
-  /* GAME SCREEN */
-  #game-screen {
-    flex: 1;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 24px;
-  }
-
-  /* PROGRESS */
-  .progress-wrap {
-    width: 100%;
-    max-width: 560px;
-    margin-bottom: 28px;
-  }
-
-  .progress-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 8px;
-  }
-
-  .progress-meta .who {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    color: var(--navy);
-  }
-
-  .progress-meta .count {
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-
-  .progress-bar {
-    height: 4px;
-    background: var(--mid);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--blue), var(--gold));
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-
-  /* SCORE ROW */
-  .score-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 28px;
-    width: 100%;
-    max-width: 560px;
-  }
-
-  .score-chip {
-    flex: 1;
-    background: white;
-    border: 1px solid var(--mid);
-    border-radius: 3px;
-    padding: 10px 16px;
-    text-align: center;
-  }
-
-  .score-chip .n {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    display: block;
-  }
-
-  .score-chip .n.know { color: var(--sage); }
-  .score-chip .n.maybe { color: var(--gold); }
-  .score-chip .n.skip { color: var(--muted); }
-
-  .score-chip .l {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-  }
-
-  /* CARD STACK */
-  .card-stack {
-    position: relative;
-    width: 100%;
-    max-width: 560px;
-    height: 220px;
-    margin-bottom: 28px;
-  }
-
-  .voter-card {
-    position: absolute;
-    inset: 0;
-    background: white;
-    border: 1px solid var(--mid);
-    border-radius: 4px;
-    padding: 16px 24px;
-    box-shadow: 0 8px 32px rgba(26,39,68,0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.35s;
-    will-change: transform, opacity;
-  }
-
-  .voter-card.behind-1 {
-    transform: translateY(6px) scale(0.97);
-    box-shadow: 0 4px 16px rgba(26,39,68,0.06);
-    z-index: 1;
-  }
-
-  .voter-card.behind-2 {
-    transform: translateY(12px) scale(0.94);
-    box-shadow: 0 2px 8px rgba(26,39,68,0.04);
-    z-index: 0;
-  }
-
-  .voter-card.active {
-    z-index: 2;
-  }
-
-  .voter-card.exit-know {
-    transform: translateX(120%) rotate(8deg);
-    opacity: 0;
-  }
-
-  .voter-card.exit-maybe {
-    transform: translateY(-80px);
-    opacity: 0;
-  }
-
-  .voter-card.exit-skip {
-    transform: translateX(-120%) rotate(-8deg);
-    opacity: 0;
-  }
-
-  .card-neighborhood {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--gold);
-    font-weight: 500;
-    margin-bottom: 10px;
-  }
-
-  .card-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    color: var(--navy);
-    line-height: 1.1;
-    margin-bottom: 12px;
-  }
-
-  .card-address {
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .card-meta {
-    font-size: 0.8rem;
-    color: var(--muted);
-    display: flex;
-    gap: 16px;
-  }
-
-  .card-meta span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .card-num {
-    position: absolute;
-    top: 20px;
-    right: 24px;
-    font-size: 0.75rem;
-    color: var(--mid);
-    font-weight: 300;
-  }
-
-  /* BUTTONS */
-  .action-row {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    max-width: 560px;
-  }
-
-  .btn-action {
-    flex: 1;
-    padding: 16px 8px;
-    border: 2px solid;
-    border-radius: 3px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    letter-spacing: 0.02em;
-  }
-
-  .btn-action .icon { font-size: 1.4rem; }
-  .btn-action .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
-
-  .btn-know {
-    border-color: var(--sage);
-    color: var(--sage);
-    background: white;
-  }
-  .btn-know:hover { background: var(--sage); color: white; }
-
-  .btn-maybe {
-    border-color: var(--gold);
-    color: #a07830;
-    background: white;
-  }
-  .btn-maybe:hover { background: var(--gold); color: white; }
-
-  .btn-skip {
-    border-color: #d0c8bc;
-    color: var(--muted);
-    background: white;
-  }
-  .btn-skip:hover { background: var(--mid); color: var(--text); }
-
-  .btn-action:active { transform: scale(0.97); }
-
-  .key-hint {
-    margin-top: 12px;
-    font-size: 0.7rem;
-    color: var(--muted);
-    text-align: center;
-    letter-spacing: 0.05em;
-  }
-
-  .key-hint kbd {
-    background: var(--mid);
-    border-radius: 2px;
-    padding: 1px 5px;
-    font-family: monospace;
-    font-size: 0.75rem;
-  }
-
-  /* ROAD FILTER */
-  .filter-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    max-width: 560px;
-    margin-bottom: 20px;
-  }
-
-  .filter-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .filter-select {
-    flex: 1;
-    padding: 7px 32px 7px 12px;
-    border: 1px solid var(--mid);
-    border-radius: 3px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem;
-    color: var(--text);
-    background: white;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7468' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-
-  .filter-select:focus { outline: none; border-color: var(--blue); }
-  .filter-select.active { border-color: var(--navy); color: var(--navy); font-weight: 500; }
-
-  /* DONE SCREEN */
-  #done-screen {
-    flex: 1;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 48px 24px;
-  }
-
-  .done-card {
-    background: white;
-    border: 1px solid var(--mid);
-    border-radius: 4px;
-    padding: 48px;
-    max-width: 480px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 4px 24px rgba(26,39,68,0.08);
-  }
-
-  .done-card .star { font-size: 3rem; margin-bottom: 16px; }
-
-  .done-card h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    color: var(--navy);
-    margin-bottom: 8px;
-  }
-
-  .done-card p {
-    color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 32px;
-  }
-
-  .done-stats {
-    display: flex;
-    gap: 1px;
-    background: var(--mid);
-    border: 1px solid var(--mid);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 32px;
-  }
-
-  .done-stat {
-    flex: 1;
-    background: white;
-    padding: 16px 8px;
-    text-align: center;
-  }
-
-  .done-stat .n {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    display: block;
-  }
-
-  .done-stat .n.know { color: var(--sage); }
-  .done-stat .n.maybe { color: var(--gold); }
-  .done-stat .n.skip { color: var(--muted); }
-
-  .done-stat .l {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-  }
-
-  .btn-restart {
-    padding: 12px 32px;
-    background: white;
-    color: var(--navy);
-    border: 2px solid var(--navy);
-    border-radius: 3px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.02em;
-  }
-
-  .btn-restart:hover { background: var(--navy); color: white; }
-
-  /* NEIGHBORHOOD BADGE */
-  .nbhd-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 2px;
-    font-size: 0.65rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .nbhd-center { background: #e8f0fe; color: #2a4494; }
-  .nbhd-south { background: #e6f4ea; color: #2e7d32; }
-  .nbhd-north { background: #fef3e2; color: #e65100; }
-  .nbhd-east { background: #fce4ec; color: #c62828; }
-  .nbhd-west { background: #f3e5f5; color: #6a1b9a; }
-
-  .btn-pause {
-    margin-top: 20px;
-    padding: 10px 24px;
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--mid);
-    border-radius: 3px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.02em;
-  }
-  .btn-pause:hover { border-color: var(--navy); color: var(--navy); background: var(--cream); }
-
-  .add-user-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--mid);
-  }
-
-  .add-user-label {
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-
-  .btn-add-user {
-    background: none;
-    border: none;
-    color: var(--blue);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
-  .btn-add-user:hover { color: var(--navy); }
-
-  #add-user-form {
-    margin-top: 14px;
-  }
-
-  .add-user-fields {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .name-input {
-    flex: 1;
-    padding: 10px 12px;
-    border: 2px solid var(--mid);
-    border-radius: 3px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    color: var(--text);
-    transition: border-color 0.2s;
-  }
-
-  .name-input:focus { outline: none; border-color: var(--blue); }
-  .name-input::placeholder { color: #b8b0a4; }
-
-@media (max-width: 480px) {
-  header { padding: 10px 16px; } /* COMPRESSED: Trimmed header thickness */
-  .header-stats { gap: 12px; }
-  .welcome-card, .done-card { padding: 32px 24px; }
-  .card-name { font-size: 1.6rem; margin-bottom: 4px; } /* COMPRESSED: Reduced title margin */
-  .voter-card { padding: 12px 16px; } /* COMPRESSED: Super-optimized for tiny screens */
-  #game-screen { padding: 12px 16px; } /* NEW: Pulls everything up slightly away from screen edges */
-  .score-row { margin-bottom: 14px; } /* NEW: Tightens score chips whitespace margin */
-  .card-stack { margin-bottom: 14px; } /* NEW: Tightens stack footer whitespace margin */
-}
-    
-</style>
-</head>
-<body>
-    
-<div id="loadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(26,39,68,0.85); z-index:9999; color:white; flex-direction:column; align-items:center; justify-content:center; gap:16px;">
-  <div style="width:40px; height:40px; border:4px solid var(--gold); border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite;"></div>
-  <div class="loading-text" style="font-family:'DM Sans',sans-serif; font-size:0.95rem; letter-spacing:0.05em;">Loading...</div>
-</div>
-
-<script>
-// Add a quick spin animation token rule to your document head styles if missing:
-// @keyframes spin { to { transform: rotate(360deg); } }
-</script>
-    
-<header>
-  <div class="logo">
-   <img src="https://ivar-dtc.github.io/who-do-i-know/WDTC-logo.png" alt="Woodstock DTC" class="logo-img" />
-    <div class="logo-text">
-      Woodstock DTC
-      <span>Neighbor Network</span>
-    </div>
-  </div>
-  <div class="header-stats" id="header-stats" style="display:none">
-    <div class="stat-pill">
-      <span class="num" id="h-reviewed">0</span>
-      <span class="lbl">Reviewed</span>
-    </div>
-    <div class="stat-pill">
-      <span class="num" id="h-know">0</span>
-      <span class="lbl">Know</span>
-    </div>
-    <div class="stat-pill">
-      <span class="num" id="h-remaining">0</span>
-      <span class="lbl">Remaining</span>
-    </div>
-  </div>
-</header>
-
-<!-- MEMBER SELECT -->
-<div id="member-screen">
-  <div class="welcome-card">
-    <h1>Who are you?</h1>
-    <p>Select your name to begin. You'll only see voters you haven't reviewed yet — pick up right where you left off anytime.</p>
-    <label for="member-select">Your name</label>
-
-    <select id="member-select">
-      <option value="">— Select your name —</option>
-    </select>
-      
-    <button class="btn-primary" id="start-btn" disabled onclick="startGame()">Begin Review</button>
-
-    <div class="add-user-row">
-      <span class="add-user-label">Not on the list?</span>
-      <button class="btn-add-user" onclick="toggleAddUser()">Add your name</button>
-    </div>
-
-    <div id="add-user-form" style="display:none;">
-      <div class="add-user-fields">
-        <input type="text" id="new-first" placeholder="First name" class="name-input" />
-        <input type="text" id="new-last" placeholder="Last name" class="name-input" />
-      </div>
-      <button class="btn-primary" id="add-user-btn" onclick="addUser()" disabled>Add &amp; select</button>
-    </div>
-  </div>
-</div>
-
-<!-- GAME -->
-<div id="game-screen">
-  <div class="progress-wrap">
-    <div class="progress-meta">
-      <span class="who" id="member-label"></span>
-      <span class="count" id="progress-count"></span>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-    </div>
-  </div>
-
-  <div class="filter-row">
-    <span class="filter-label">Filter by road</span>
-    <select class="filter-select" id="road-filter" onchange="handleRoadSelection(this.value)">
-      <option value="All">All roads</option>
-    </select>
-  </div>
-
-  <div class="score-row">
-    <div class="score-chip">
-      <span class="n know" id="score-know">0</span>
-      <span class="l">Know them</span>
-    </div>
-    <div class="score-chip">
-      <span class="n maybe" id="score-maybe">0</span>
-      <span class="l">Know of them</span>
-    </div>
-    <div class="score-chip">
-      <span class="n skip" id="score-skip">0</span>
-      <span class="l">Don't know</span>
-    </div>
-  </div>
-
-  <div class="card-stack" id="card-stack"></div>
-
-  <div class="action-row">
-  <button class="btn-action btn-skip" onclick="undo()" style="border-color: var(--muted); color: var(--muted); flex: 0.6;">
-    <span class="icon">↶</span>
-    <span class="label">Undo</span>
-  </button>
-
-  <button class="btn-action btn-skip" onclick="respond('skip')">
-    <span class="icon">✕</span>
-    <span class="label">Don't know</span>
-  </button>
-  <button class="btn-action btn-maybe" onclick="respond('maybe')">
-    <span class="icon">◎</span>
-    <span class="label">Know of them</span>
-  </button>
-  <button class="btn-action btn-know" onclick="respond('know')">
-    <span class="icon">✓</span>
-    <span class="label">Know them</span>
-  </button>
-</div>
-
-  <p class="key-hint">
-    Keyboard: <kbd>K</kbd> know &nbsp;·&nbsp; <kbd>M</kbd> know of them &nbsp;·&nbsp; <kbd>N</kbd> don't know
-  </p>
-
-  <button class="btn-pause" onclick="pauseGame()">Done for now — save &amp; come back later</button>
-</div>
-
-<!-- PAUSE -->
-<div id="pause-screen" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;">
-  <div class="done-card">
-    <div class="star">◎</div>
-    <h2>Saved!</h2>
-    <p id="pause-message"></p>
-    <div class="done-stats">
-      <div class="done-stat">
-        <span class="n know" id="pause-know">0</span>
-        <span class="l">Know them</span>
-      </div>
-      <div class="done-stat">
-        <span class="n maybe" id="pause-maybe">0</span>
-        <span class="l">Know of them</span>
-      </div>
-      <div class="done-stat">
-        <span class="n skip" id="pause-skip">0</span>
-        <span class="l">Don't know</span>
-      </div>
-    </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn-primary" style="width:auto;padding:12px 28px;" onclick="resumeGame()">Continue reviewing</button>
-      <button class="btn-restart" onclick="resetGame()">Switch member</button>
-    </div>
-  </div>
-</div>
-
-<!-- DONE -->
-<div id="done-screen">
-  <div class="done-card">
-    <div class="star">★</div>
-    <h2>All done!</h2>
-    <p id="done-message"></p>
-    <div class="done-stats">
-      <div class="done-stat">
-        <span class="n know" id="final-know">0</span>
-        <span class="l">Know them</span>
-      </div>
-      <div class="done-stat">
-        <span class="n maybe" id="final-maybe">0</span>
-        <span class="l">Know of them</span>
-      </div>
-      <div class="done-stat">
-        <span class="n skip" id="final-skip">0</span>
-        <span class="l">Don't know</span>
-      </div>
-    </div>
-    <button class="btn-restart" onclick="resetGame()">Review Another Member</button>
-  </div>
-</div>
-
-<script>
-// ─── DYNAMIC GAME DATABASE STORAGE VARS ────────────────────────────────────
-let ALL_ROADS = [];        // Compiled list of streets and progress: [{name, total, reviewed, isDone}]
-let ACTIVE_ROAD = "All";   // Current street being tracked
-let VOTERS = [];           // Dynamically populated row list for the actively selected street
-
-// ─── RUNTIME STATE MACHINE ──────────────────────────────────────────────────
-let currentMember = null;
-let queue = [];
-let actionHistory = [];    // Tracks reviewed records in order: { voter: Object, answer: String }
-let responses = { know: 0, maybe: 0, skip: 0 };
-let totalForMember = 0;
-let animating = false;
-
-
-// ─── ADD USER ───────────────────────────────────────────────────────────────
-function toggleAddUser() {
-  const form = document.getElementById('add-user-form');
-  const visible = form.style.display !== 'none';
-  form.style.display = visible ? 'none' : 'block';
-  if (!visible) document.getElementById('new-first').focus();
+// ============================================================
+// WOODSTOCK DTC NEIGHBOR NETWORK
+// Google Apps Script
+//
+// SETUP INSTRUCTIONS:
+// 1. Open your Google Sheet
+// 2. Click Extensions → Apps Script
+// 3. Delete any existing code and paste this entire script
+// 4. Click Save (floppy disk icon)
+// 5. Run setupSheet() once to add the Road column + member headers:
+//      - Click the function dropdown (top bar), select "setupSheet"
+//      - Click Run ▶
+//      - Accept permissions when prompted
+// 6. Deploy as web app:
+//      - Click Deploy → New deployment
+//      - Type: Web app
+//      - Execute as: Me
+//      - Who has access: Anyone
+//      - Click Deploy and copy the web app URL
+// 7. Paste that URL into the HTML game (APPS_SCRIPT_URL constant)
+// ============================================================
+
+// --- CONFIGURATION -------------------------------------------
+const SHEET_NAME = "Sheet1";   // Change if your tab is named differently
+
+function getMembers(sheet) {
+  const lastCol = sheet.getLastColumn();
+  const headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  const members = [];
+  for (let c = MEMBERS_START - 1; c < headerRow.length; c++) {
+    const name = String(headerRow[c]).trim();
+    if (name && name !== "") members.push(name);
+  }
+  return members;
 }
 
-async function addUser() {
-  const first = document.getElementById('new-first').value.trim();
-  const last = document.getElementById('new-last').value.trim();
-  if (!first || !last) return;
+// Column indices (1-based) of fixed voter data columns
+// LastName=1, FirstName=2, MiddleName=3, Suffix=4, Sex=5,
+// Address=6, City=7, State=8, HD=9, PrefPhone=10, PreferredEmail=11
+const ADDRESS_COL   = 8;
+const ROAD_COL      = 12;  // New column inserted after PreferredEmail
+const MEMBERS_START = 14;  // Member columns start here
 
-  const fullName = `${first} ${last}`;
-  const btn = document.getElementById('add-user-btn');
-  btn.disabled = true;
-  btn.textContent = 'Adding...';
-
-  try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'addMember', name: fullName })
-    });
-    const result = await response.json();
-
-    if (!result.success) {
-      alert('Could not add member: ' + (result.error || 'Unknown error'));
-      return;
-    }
-
-    const confirmedName = result.name;
-    const select = document.getElementById('member-select');
-    const exists = [...select.options].some(o => o.text === confirmedName);
-    if (!exists) {
-      const opt = document.createElement('option');
-      opt.value = confirmedName;
-      opt.textContent = confirmedName;
-      select.appendChild(opt);
-    }
-
-    select.value = confirmedName;
-    document.getElementById('start-btn').disabled = false;
-    document.getElementById('add-user-form').style.display = 'none';
-    document.getElementById('new-first').value = '';
-    document.getElementById('new-last').value = '';
-
-  } catch (err) {
-    alert('Network error adding member: ' + err.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Add & select';
+// ============================================================
+// SETUP — Formula-Free Engine with Targeted Trailing Unit Scrub
+// ============================================================
+function setupSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    SpreadsheetApp.getUi().alert(`Sheet "${SHEET_NAME}" not found. Check SHEET_NAME in the script.`);
+    return;
   }
-}
 
-async function populateMemberDropdown() {
-  try {
-    const response = await fetch(`${APPS_SCRIPT_URL}?action=members`);
-    const data = await response.json();
-    if (!data.success || !Array.isArray(data.members)) return;
-
-    const select = document.getElementById('member-select');
-    select.innerHTML = '<option value="">— Select your name —</option>';
-    data.members.forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      select.appendChild(opt);
-    });
-  } catch (err) {
-    console.error('Could not load member list:', err);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  populateMemberDropdown();
-  ['new-first', 'new-last'].forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
-      const first = document.getElementById('new-first').value.trim();
-      const last = document.getElementById('new-last').value.trim();
-      document.getElementById('add-user-btn').disabled = !(first && last);
-    });
-    document.getElementById(id).addEventListener('keydown', e => {
-      if (e.key === 'Enter') addUser();
-    });
-  });
-});
-    
-
-
-
-
-// ─── BACKEND CONFIG ─────────────────────────────────────────────────────────
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCOsKYQV1WBYvhPEMtUvnP0vfETGT65kvSEXUQJ0RJZ_T-_IzFeztpZWgViU3p9win/exec";
-
-// Put this new global tracker variable right above fetchRoadsData
-let GLOBAL_KNOWS_TOTAL = 0; 
-
-async function fetchRoadsData() {
-  if (!currentMember) return;
+  const lastRow = sheet.getLastRow();
   
-  try {
-    showLoading(true, "Synchronizing town roadmap configurations...");
+  // --- 1. PULL & SCRUB RAW ROAD STRINGS DIRECTLY FROM COLUMN L (12) ---
+  const rawRoadValues = sheet.getRange(2, ROAD_COL, lastRow - 1, 1).getValues();
+  const cleanedRoadsForSheet = [];
+  
+  for (let i = 0; i < rawRoadValues.length; i++) {
+    let road = String(rawRoadValues[i][0]).trim();
+    if (!road || road === "null" || road === "Road" || road === "Street Not Listed") {
+      cleanedRoadsForSheet.push(["Street Not Listed"]);
+      continue;
+    }
     
-    // 1. Fetch live road progress calculated directly from Sheet1
-    const progressUrl = `${APPS_SCRIPT_URL}?action=progress&member=${encodeURIComponent(currentMember)}`;
-    const progressResponse = await fetch(progressUrl);
-    const progressData = await progressResponse.json();
-    
-    // 2. Fetch summary stats for the header pills baseline
-    const summaryUrl = `${APPS_SCRIPT_URL}?action=summary&member=${encodeURIComponent(currentMember)}`;
-    const summaryResponse = await fetch(summaryUrl);
-    const summaryData = await summaryResponse.json();
+    // Targeted cleaning pass: Strip ONLY trailing #, Apt, Unit, or Fl designators
+    // This regular expression safely leaves thoroughfares like "Sherman Lane" completely untouched!
+    let polishedRoad = road.replace(/\s+(?:#|Apt\.?|Unit|Fl\.?|Floor)\s*.*$/i, '');
+    cleanedRoadsForSheet.push([polishedRoad.trim()]);
+  }
+  
+ // Overwrite Column L (12) on Sheet1 with your beautifully polished, standardized street names
+  sheet.getRange(2, ROAD_COL, lastRow - 1, 1).setValues(cleanedRoadsForSheet);
 
-    if (progressData && progressData.success && summaryData && summaryData.success) {
-      ALL_ROADS = progressData.roads;
-      console.log(`Live progress loaded for ${ALL_ROADS.length} roads.`);
+  // Declare members first before anything else uses it
+  const members = getMembers(sheet);
+
+  // Read all member reviews starting from Column N (14) to the end of your sheet data
+  const rawMemberValues = sheet.getRange(2, MEMBERS_START, lastRow - 1, members.length).getValues();
+  
+  // --- 2. CLEAN REBUILD OF THE ROADPROGRESS TAB ---
+  let progressTab = ss.getSheetByName("RoadProgress");
+  if (progressTab) {
+    ss.deleteSheet(progressTab);
+  }
+  progressTab = ss.insertSheet("RoadProgress");
+
+  const rawRoadList = cleanedRoadsForSheet.map(r => r[0]);
+  const uniqueRoads = [...new Set(rawRoadList)]
+    .filter(r => r && r !== "" && r !== "Street Not Listed")
+    .sort();
+    
+  uniqueRoads.push("Street Not Listed");
+
+
+  const progressHeaders = ["Road Name", "Total Voters", "Global Progress Status"];
+  members.forEach(member => { progressHeaders.push(member); });
+
+  progressTab.getRange(1, 1, 1, progressHeaders.length).setValues([progressHeaders]);
+
+  // --- 3. RUN THE CALCULATIONS NATIVELY IN JAVASCRIPT ---
+  const matrixRows = [];
+  
+  // Outer loop: Evaluate one unique street row at a time
+  for (let k = 0; k < uniqueRoads.length; k++) {
+    const roadName = uniqueRoads[k];
+    
+    let totalVotersOnRoad = 0;
+    let memberDoneCounts = Array(members.length).fill(0);
+    
+    // Inner loop: Scan through all voter records on Sheet1
+    for (let r = 0; r < rawRoadList.length; r++) {
+      if (rawRoadList[r] === roadName) {
+        totalVotersOnRoad++; // We found a voter living on this street!
+        
+        // Check what answers each individual member logged for this specific voter row
+        for (let m = 0; m < members.length; m++) {
+          let memberAnswer = String(rawMemberValues[r][m]).trim();
+          if (memberAnswer !== "" && memberAnswer !== "null" && memberAnswer !== "undefined") {
+            memberDoneCounts[m]++;
+          }
+        }
+      }
+    }
+    
+    // --- 4. ASSEMBLE VALUES FOR THIS ROW ---
+    const rowCells = [];
+    rowCells.push(roadName);        // Column A: Clean text road name
+    rowCells.push(totalVotersOnRoad); // Column B: Raw number of total voters
+    
+    // Column C: Global Progress Status determination
+    let totalReviewsOnRoad = memberDoneCounts.reduce((sum, count) => sum + count, 0);
+    let totalPossibleReviews = totalVotersOnRoad * members.length;
+    
+    let globalStatus = "🔴 Unstarted";
+    if (totalReviewsOnRoad === totalPossibleReviews && totalPossibleReviews > 0) {
+      globalStatus = "🟢 Completed";
+    } else if (totalReviewsOnRoad > 0) {
+      globalStatus = "🟡 In Progress";
+    }
+    rowCells.push(globalStatus);
+    
+    // Columns D onward: Format plain completion fraction strings for each member
+    for (let m = 0; m < members.length; m++) {
+      rowCells.push(`${memberDoneCounts[m]} / ${totalVotersOnRoad}`);
+    }
+    
+    matrixRows.push(rowCells);
+  }
+
+  // --- 5. WRITE PLAIN DATA TO THE SHEET ---
+  progressTab.getRange(2, 1, matrixRows.length, progressHeaders.length).setValues(matrixRows);
+  
+  // Style and format properties
+  progressTab.setFrozenRows(1);
+  progressTab.setFrozenColumns(1);
+  progressTab.getRange(2, 1, matrixRows.length, 1).setFontWeight("bold");
+  progressTab.getRange(1, 1, 1, 3).setBackground("#2a4494").setFontColor("white").setFontWeight("bold");
+progressTab.getRange(1, 4, 1, members.length).setBackground("#c8a84b").setFontColor("#1a2744").setFontWeight("bold");  
+  // Center numbers and statuses for readability
+  progressTab.getRange(2, 2, matrixRows.length, progressHeaders.length).setHorizontalAlignment("center");
+  progressTab.getRange(2, 1, matrixRows.length, 1).setHorizontalAlignment("left");
+  
+  progressTab.setColumnWidth(1, 220);
+  progressTab.setColumnWidth(2, 110);
+  progressTab.setColumnWidth(3, 160);
+  for (let c = 4; c <= progressHeaders.length; c++) {
+    progressTab.setColumnWidth(c, 140);
+  }
+  buildSummaryStats(sheet, uniqueRoads, rawRoadList, rawMemberValues, lastRow);
+  SpreadsheetApp.getUi().alert("✓ Step 1 Complete! Trailing unit anomalies scrubbed and list compiled perfectly with zero formulas.");
+  }
+
+// Global utility helper to map column indexes cleanly to spreadsheet text letters (e.g. 1 -> A, 27 -> AA)
+function getColumnLetter(col) {
+  let letter = "";
+  while (col > 0) {
+    let t = (col - 1) % 26;
+    letter = String.fromCharCode(65 + t) + letter;
+    col = (col - t - 1) / 26;
+  }
+  return letter;
+}
+
+// ============================================================
+// WEB API FEED — Handles incoming browser GET requests
+// ============================================================
+function doGet(e) {
+  const action = e && e.parameter && e.parameter.action;
+  const member = e && e.parameter && e.parameter.member;
+
+  // 1. Base API Status Check / Ping Route
+  if (!action || action === "ping") {
+    return jsonResponse({ status: "ok", message: "DTC Network API is running perfectly." });
+  }
+  
+  // NEW: action=members — Returns all member column headers from Sheet1 (col 14+)
+  if (action === "members") {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    const lastCol = sheet.getLastColumn();
+    const headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    const members = [];
+    for (let c = MEMBERS_START - 1; c < headerRow.length; c++) {
+      const name = String(headerRow[c]).trim();
+      if (name && name !== "") members.push(name);
+    }
+    return jsonResponse({ success: true, members });
+  }
+
+  // NEW: action=progress — calculates live road progress from Sheet1 for a specific member
+  if (action === "progress") {
+    if (!member) return jsonResponse({ success: false, error: "Missing required member parameter." });
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    const lastRow = sheet.getLastRow();
+    const lastCol = sheet.getLastColumn();
+
+    // Get header row to find member's column
+    const headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    let memberColIdx = -1;
+    for (let c = MEMBERS_START - 1; c < headerRow.length; c++) {
+      if (String(headerRow[c]).trim().toLowerCase() === member.trim().toLowerCase()) {
+        memberColIdx = c;
+        break;
+      }
+    }
+
+    // Get all voter data — road column (ROAD_COL) and member column
+    const roadValues = sheet.getRange(2, ROAD_COL, lastRow - 1, 1).getValues();
+    const memberValues = memberColIdx >= 0
+      ? sheet.getRange(2, memberColIdx + 1, lastRow - 1, 1).getValues()
+      : [];
+
+    // Build road progress map
+    const roadMap = {};
+    for (let r = 0; r < roadValues.length; r++) {
+      const roadName = String(roadValues[r][0]).trim();
+      if (!roadName || roadName === "") continue;
+
+      if (!roadMap[roadName]) {
+        roadMap[roadName] = { total: 0, reviewed: 0 };
+      }
+      roadMap[roadName].total++;
+
+      if (memberColIdx >= 0) {
+        const answer = String(memberValues[r][0]).trim();
+        if (answer !== "" && answer !== "null" && answer !== "undefined") {
+          roadMap[roadName].reviewed++;
+        }
+      }
+    }
+
+    // Convert to sorted array
+    const roads = Object.keys(roadMap)
+      .sort()
+      .map(name => ({
+        name,
+        total: roadMap[name].total,
+        reviewed: roadMap[name].reviewed,
+        isDone: roadMap[name].reviewed >= roadMap[name].total && roadMap[name].total > 0
+      }));
+
+    return jsonResponse({ success: true, member, roads });
+  }
+
+  // 1a. Serve the raw data rows mapped into clean objects for the client browser engine
+  if (action === "voters") {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    const lastRow = sheet.getLastRow();
+    const lastCol = sheet.getLastColumn();
+    
+    const dataRange = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+    const headers = dataRange[0];
+    const voters = [];
+    
+    for (let i = 1; i < dataRange.length; i++) {
+      let rowObj = {};
+      for (let j = 0; j < headers.length; j++) {
+        // Map headers to key values (e.g. voter.LastName, voter.VANID, voter.road)
+        let keyName = headers[j].trim();
+        rowObj[keyName] = dataRange[i][j];
+      }
       
-      GLOBAL_KNOWS_TOTAL = parseInt(summaryData.yes, 10) || 0; 
-      console.log(`Baseline 'Know' count from sheet: ${GLOBAL_KNOWS_TOTAL}`);
+      // Legacy layout backward-compatibility mapping fallbacks:
+      rowObj.id = rowObj.VANID || ("v" + i); // VANID becomes your anchor ID token!
+      rowObj.name = `${rowObj.FirstName || ""} ${rowObj.LastName || ""}`.trim();
+      rowObj.address = rowObj.Address || "";
+      rowObj.road = rowObj.Road || "";
       
-      buildRoadDropdown(); 
-      updateStats();
+      voters.push(rowObj);
+    }
+    
+    return jsonResponse({ voters });
+  }
+
+  // 2. action=ages — Returns raw voter age data arrays for game initialization
+  if (action === "ages") {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    const lastRow = sheet.getLastRow();
+    // Column G (7) = Age, rows 2..lastRow
+    const ageValues = sheet.getRange(2, 7, lastRow - 1, 1).getValues();
+    const ages = ageValues.map(r => r[0] || null);
+    return jsonResponse({ ages });
+  }
+
+// ─── NEW: SUMMARY STATS API ENDPOINT ──────────────────────────────────────
+  if (action === "summary") {
+    if (!member) return jsonResponse({ success: false, error: "Missing required member name parameter." });
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const summaryTab = ss.getSheetByName("SummaryStats");
+    if (!summaryTab) return jsonResponse({ success: false, error: "SummaryStats tab not found. Re-run setupSheet." });
+
+    const lastCol = summaryTab.getLastColumn();
+    const lastRow = summaryTab.getLastRow();
+    
+    // Fetch raw values for header text matching, and display values to read evaluated formula metrics
+    const summaryData = summaryTab.getRange(1, 1, lastRow, lastCol).getValues();
+    const displayData = summaryTab.getRange(1, 1, lastRow, lastCol).getDisplayValues();
+    
+    const headers = summaryData[0];
+    const cleanTarget = member.replace(/\s*\*$/, '').replace(/[-\s]/g, '').trim().toLowerCase();
+
+    // Find our member's column index dynamically by stripping spaces/hyphens
+    let memberColIdx = -1;
+    for (let c = 1; c < headers.length; c++) {
+      const cleanHeader = String(headers[c]).replace(/\s*\*$/, '').replace(/[-\s]/g, '').trim().toLowerCase();
+      if (cleanHeader === cleanTarget) {
+        memberColIdx = c;
+        break;
+      }
+    }
+
+    if (memberColIdx === -1) {
+      return jsonResponse({ success: true, yes: 0, ko: 0, no: 0, reviewed: 0 });
+    }
+
+    let yesVal = 0, koVal = 0, noVal = 0, reviewedVal = 0;
+
+    // Scan column A text labels, but extract text from displayData to read calculated formula states!
+    for (let r = 0; r < summaryData.length; r++) {
+      const label = String(summaryData[r][0]).trim().toLowerCase();
+      const rawTextDisplay = String(displayData[r][memberColIdx]).trim();
+      
+      if (label.indexOf("yes") !== -1) {
+        yesVal = parseInt(rawTextDisplay, 10) || 0;
+      } else if (label.indexOf("know of") !== -1 || label.indexOf("ko") !== -1) {
+        koVal = parseInt(rawTextDisplay, 10) || 0;
+      } else if (label.indexOf("don't know") !== -1 || label.indexOf("(n)") !== -1) {
+        noVal = parseInt(rawTextDisplay, 10) || 0;
+      } else if (label.indexOf("reviewed") !== -1) {
+        reviewedVal = parseInt(rawTextDisplay, 10) || 0;
+      }
+    }
+
+    return jsonResponse({
+      success: true,
+      member: member,
+      yes: yesVal,
+      ko: koVal,
+      no: noVal,
+      reviewed: reviewedVal
+    });
+  }
+  // 3. NEW ACTION: action=roads — Fetches available streets and individual member progress
+  if (action === "roads") {
+    if (!member) {
+      return jsonResponse({ success: false, error: "Missing required member parameter query." });
+    }
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const progressTab = ss.getSheetByName("RoadProgress");
+    if (!progressTab) {
+      return jsonResponse({ success: false, error: "RoadProgress data tracking tab not found. Run setupSheet first." });
+    }
+
+    const lastRow = progressTab.getLastRow();
+    const lastCol = progressTab.getLastColumn();
+    // Fetch the entire Tab 2 matrix grid into memory
+    const progressData = progressTab.getRange(1, 1, lastRow, lastCol).getValues();
+
+    const headers = progressData[0];
+    
+    // Scan headers to find exactly what column index matches the member logging in right now
+    let memberColIdx = -1;
+    for (let c = 3; c < headers.length; c++) {
+      // Strip out the trailing " *" marker we append for custom guests so names match precisely
+      if (headers[c].replace(/\s*\*$/, '').trim().toLowerCase() === member.trim().toLowerCase()) {
+        memberColIdx = c;
+        break;
+      }
+    }
+
+    const roadList = [];
+    
+    // Loop through all generated street rows on Tab 2 (skipping Row 1 header)
+    for (let r = 1; r < progressData.length; r++) {
+      const roadName = progressData[r][0];
+      const totalVoters = parseInt(progressData[r][1], 10) || 0;
+      
+      let reviewCount = 0;
+      
+      // If the member column was located, parse their fraction string (e.g. "12 / 42")
+      if (memberColIdx !== -1) {
+        const fractionString = String(progressData[r][memberColIdx]);
+        // Regex extract the number BEFORE the slash line symbol
+        const completedMatch = fractionString.match(/^(\d+)\s*\//);
+        if (completedMatch) {
+          reviewCount = parseInt(completedMatch[1], 10);
+        }
+      }
+
+      // Package each street up into a structured object format for the HTML app frontend
+      roadList.push({
+        name: roadName,
+        total: totalVoters,
+        reviewed: reviewCount,
+        isDone: (reviewCount >= totalVoters && totalVoters > 0)
+      });
+    }
+
+    return jsonResponse({ success: true, member: member, roads: roadList });
+  }
+
+  return jsonResponse({ status: "error", message: "Unknown API route invocation parameter context." });
+}
+
+// ============================================================
+// WEB API WRITE — Receives data updates and searches by VANID
+// ============================================================
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+
+    // NEW: action=addMember — creates a new member column across all three tabs
+    if (data.action === "addMember") {
+      const newName = String(data.name || "").trim();
+      if (!newName) {
+        return jsonResponse({ success: false, error: "Name is required." });
+      }
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheet = ss.getSheetByName(SHEET_NAME);
+      const col = findOrCreateMemberColumn(sheet, newName);
+      if (!col) {
+        return jsonResponse({ success: false, error: "Could not create column for " + newName });
+      }
+      return jsonResponse({ success: true, name: newName });
+    }
+
+    const { voterId, memberName, answer } = data;
+
+    // 1. Validate incoming answer values (allowing "" for Undo operations)
+    const validAnswers = ["Y", "N", "KO", ""];
+    if (!validAnswers.includes(answer)) {
+      return jsonResponse({ success: false, error: "Invalid answer value structure submitted." });
+    }
+
+    // 2. Validate that we actually received a VANID anchor key
+    if (!voterId) {
+      return jsonResponse({ success: false, error: "Missing required unique identifier anchor (voterId/VANID)." });
+    }
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      return jsonResponse({ success: false, error: `Sheet "${SHEET_NAME}" not found.` });
+    }
+
+    // 3. DYNAMIC LOOKUP PHASE: Find the voter's row matching their unique VANID
+    const lastRow = sheet.getLastRow();
+    // VANID is locked in Column F (Column 6). Let's fetch the entire active column into cache memory
+    const vanIdColumnValues = sheet.getRange(2, 6, lastRow - 1, 1).getValues();
+    
+    let targetRowIndex = -1;
+    for (let i = 0; i < vanIdColumnValues.length; i++) {
+      if (String(vanIdColumnValues[i][0]).trim() === String(voterId).trim()) {
+        targetRowIndex = i + 2; // Offset by 2 (row 1 is header, index 0 is row 2)
+        break;
+      }
+    }
+
+    // Error exit route if the tracking code cannot locate that specific individual
+    if (targetRowIndex === -1) {
+      return jsonResponse({ success: false, error: `Voter identifier "${voterId}" could not be located in Column F.` });
+    }
+
+    // 4. Find or auto-generate the current member's data column
+    const memberCol = findOrCreateMemberColumn(sheet, memberName);
+    if (!memberCol) {
+      return jsonResponse({ success: false, error: `Could not reconcile active data column tracking for "${memberName}".` });
+    }
+
+    const cell = sheet.getRange(targetRowIndex, memberCol);
+
+    // 5. Execute core cell write manipulation behaviors
+    if (answer === "") {
+      cell.clearContent();
+      cell.setBackground(null); // Wipe styling cleanly on Undo requests
+      cell.setFontColor(null);
+      return jsonResponse({ success: true, row: targetRowIndex, col: memberCol, status: "cleared", voterId });
+    }
+
+    // Write normal score evaluation inputs
+    cell.setValue(answer);
+
+    // Apply clean conditional coloring matching standard project style tokens
+    if (answer === "Y") {
+      cell.setBackground("#d4edda").setFontColor("#155724"); // Green highlight
+    } else if (answer === "KO") {
+      cell.setBackground("#fff3cd").setFontColor("#856404"); // Gold highlight
     } else {
-      alert("Could not load road progress from sheet.");
+      cell.setBackground("#f8d7da").setFontColor("#721c24"); // Red highlight
     }
+
+    return jsonResponse({ success: true, row: targetRowIndex, col: memberCol, answer, voterId });
+
   } catch (err) {
-    console.error("fetchRoadsData error:", err);
-    alert("Unable to load road progress.");
-  } finally {
-    showLoading(false);
+    return jsonResponse({ success: false, error: err.toString() });
   }
 }
 
-// ─── EXTRACT SPECIFIC VOTERS FOR THE CURRENTLY TARGETED ROAD ────────────────
-// ─── EXTRACT SPECIFIC VOTERS FOR THE CURRENTLY TARGETED ROAD ────────────────
-async function loadVotersForRoad(roadName) {
-  if (!currentMember) return;
-  ACTIVE_ROAD = roadName;
-  
-  try {
-    showLoading(true, `Querying voter ledger logs for ${roadName}...`);
-    
-    // 1. Fetch data explicitly with the voters parameter tag
-    const response = await fetch(`${APPS_SCRIPT_URL}?action=voters`);
-    const rawData = await response.json();
-    
-    // 2. Strict Object Mapping: Safely traverse any nested layout structures
-    let masterRoster = [];
-    if (Array.isArray(rawData)) {
-      masterRoster = rawData;
-    } else if (rawData && rawData.voters && Array.isArray(rawData.voters)) {
-      masterRoster = rawData.voters;
-    } else if (rawData && rawData.data && Array.isArray(rawData.data)) {
-      masterRoster = rawData.data;
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+
+function findOrCreateMemberColumn(sheet, memberName) {
+  const lastCol = sheet.getLastColumn();
+  const headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+
+  // Search existing headers — if found, return immediately
+  for (let i = 0; i < headerRow.length; i++) {
+    if (String(headerRow[i]).trim() === memberName.trim()) {
+      return i + 1;
     }
-    
-    // Safety exit route if the array container cannot be unboxed
-    if (masterRoster.length === 0) {
-      console.error("Payload Extraction Failure. Raw network payload returned:", rawData);
-      alert("System database returned an empty voter canvas record stack. Please re-run setupSheet inside Google Sheets.");
-      return;
-    }
-    
-    // 3. Precision Filter Pass: Isolate matches and remove reviewed records
-    VOTERS = masterRoster.filter(voter => {
-      // Safely treat data properties as strings to avoid property crashes
-      const roadValueOnSheet = voter.Road || voter.road || "";
-      const roadMatches = String(roadValueOnSheet).trim().toLowerCase() === roadName.trim().toLowerCase();
-      
-      const cleanMemberKey = currentMember.trim();
-      // Look up keys matching both precise casing rules
-      const existingAnswer = voter[cleanMemberKey];
-      
-      const hasNotBeenReviewedYet = !existingAnswer || 
-                                    String(existingAnswer).trim() === "" || 
-                                    String(existingAnswer).trim() === "null" ||
-                                    String(existingAnswer).trim() === "undefined";
-      
-      return roadMatches && hasNotBeenReviewedYet;
-    });
-    
-    // 4. Ingest profiles straight into active deck swiping frames!
-    initializeQueue(VOTERS);
-    
-  } catch (err) {
-    console.error("Local roster filtration initialization error details:", err);
-    alert("Failed to extract active records for the requested neighborhood. Please check network pipeline properties.");
-  } finally {
-    showLoading(false);
   }
-}
 
-// Global utility helper to toggle a full-screen loader animation overlay if needed
-function showLoading(displayState, messageText = "Loading...") {
-  const loaderEl = document.getElementById('loadingOverlay');
-  if (loaderEl) {
-    loaderEl.style.display = displayState ? 'flex' : 'none';
-    const textEl = loaderEl.querySelector('.loading-text');
-    if (textEl && displayState) textEl.textContent = messageText;
-  }
-}
+  // ── Not found: create new column on Sheet1 ──
+  const newCol = lastCol + 1;
+  const headerCell = sheet.getRange(1, newCol);
+  headerCell.setValue(memberName);
+  headerCell
+    .setBackground("#e8d5a3")
+    .setFontColor("#1a2744")
+    .setFontWeight("bold")
+    .setHorizontalAlignment("center");
+  sheet.setColumnWidth(newCol, 140);
+  Logger.log(`Created new Sheet1 column for "${memberName}" at column ${newCol}`);
 
-// ─── GENERATE ROAD SELECT DROPDOWN WITH PROGRESS EMBEDDED ────────────────────
-function buildRoadDropdown() {
-  const select = document.getElementById('road-filter');
-  if (!select) return;
-  
-  select.innerHTML = '';
-  
-  const autoOpt = document.createElement('option');
-  autoOpt.value = "AUTO_PICK";
-  autoOpt.textContent = "🚀 Auto-Pick an Unfinished Road (Recommended)";
-  select.appendChild(autoOpt);
-  
-  ALL_ROADS.forEach(road => {
-    if (parseInt(road.total, 10) === 0) return; 
-    
-    const opt = document.createElement('option');
-    opt.value = road.name;
-    
-    // Safely treat data counts as raw numbers
-    const totalVoters = parseInt(road.total, 10) || 0;
-    const reviewedVoters = parseInt(road.reviewed, 10) || 0;
-    const percentage = totalVoters > 0 ? Math.round((reviewedVoters / totalVoters) * 100) : 0;
-    
-    opt.textContent = `${road.name} (${reviewedVoters}/${totalVoters} · ${percentage}%) ${road.isDone ? '✓' : ''}`;
-    
-    if (road.isDone) {
-      opt.style.color = '#7a7468';
-      opt.style.background = '#f5f0e8';
-    }
-    select.appendChild(opt);
-  });
-}
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const colLetter = columnToLetter(newCol);
+  const lastRow = sheet.getLastRow();
 
-// ─── SELECT/RELOAD A SPECIFIC TARGETED VILLAGE thoroughfare ──────────────────
-function handleRoadSelection(selectedValue) {
-  if (!selectedValue) return;
-  
-  if (selectedValue === "AUTO_PICK") {
-    autoPickUnfinishedRoad();
-  } else {
-    loadVotersForRoad(selectedValue);
-  }
-}
+  // ── Add member to RoadProgress ──
+  const progressTab = ss.getSheetByName("RoadProgress");
+  if (progressTab) {
+    const progressLastCol = progressTab.getLastColumn();
+    const progressLastRow = progressTab.getLastRow();
+    const progressHeaders = progressTab.getRange(1, 1, 1, progressLastCol).getValues()[0];
 
-// ─── AUTOMATICALLY LOCATE AND DEPLOY AN UNFINISHED ROAD FOR USER ─────────────
-function autoPickUnfinishedRoad() {
-  const openRoads = ALL_ROADS.filter(r => !r.isDone && r.total > 0 && r.name !== "Street Not Listed");
-  
-  console.log("Open roads available:", openRoads.map(r => `${r.name} (${r.reviewed}/${r.total})`));
-  
-  if (openRoads.length === 0) {
-    alert("Incredible work! You have officially reviewed every single street in Woodstock!");
-    loadVotersForRoad("Street Not Listed");
-    return;
-  }
-  
-  const randomIndex = Math.floor(Math.random() * openRoads.length);
-  const selectedRoad = openRoads[randomIndex];
-  
-  console.log("Selected road:", selectedRoad.name, "isDone:", selectedRoad.isDone, "reviewed:", selectedRoad.reviewed, "total:", selectedRoad.total);
-  
-  document.getElementById('road-filter').value = selectedRoad.name;
-  loadVotersForRoad(selectedRoad.name);
-}
+    // Only add if not already present
+    const alreadyInProgress = progressHeaders.some(h => String(h).trim() === memberName.trim());
+    if (!alreadyInProgress) {
+      const newProgressCol = progressLastCol + 1;
+      const headerCell2 = progressTab.getRange(1, newProgressCol);
+      headerCell2.setValue(memberName);
+      headerCell2
+        .setBackground("#c8a84b")
+        .setFontColor("#1a2744")
+        .setFontWeight("bold")
+        .setHorizontalAlignment("center");
+      progressTab.setColumnWidth(newProgressCol, 140);
 
-function saveResponse(member, voterId, answer) {
-  // 1. Map client button tags over to your spreadsheet's raw metrics (Y, KO, N)
-  const answerMap = { know: "Y", maybe: "KO", skip: "N" };
-  const sheetAnswer = answerMap[answer] || "N";
+      // Read road names and Sheet1 data to compute 0/total fractions for this new member
+      const roadNames = progressTab.getRange(2, 1, progressLastRow - 1, 1).getValues();
+      const sheet1Roads = sheet.getRange(2, ROAD_COL, lastRow - 1, 1).getValues();
+      const sheet1Answers = sheet.getRange(2, newCol, lastRow - 1, 1).getValues();
 
-  // 2. Fetch the clean display name of the current user
-  const select = document.getElementById('member-select');
-  const rawName = select.options[select.selectedIndex].text;
-  const memberName = select.options[select.selectedIndex].text.trim();
+      const fractions = roadNames.map(([roadName]) => {
+        let total = 0, reviewed = 0;
+        for (let r = 0; r < sheet1Roads.length; r++) {
+          if (String(sheet1Roads[r][0]).trim() === String(roadName).trim()) {
+            total++;
+            const ans = String(sheet1Answers[r][0]).trim();
+            if (ans !== "" && ans !== "null" && ans !== "undefined") reviewed++;
+          }
+        }
+        return [`${reviewed} / ${total}`];
+      });
 
-  // 3. Securely dispatch the write command using the unique VANID
-  // We pass voterId as our primary anchor key, cutting out fragile row index offsets completely!
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", APPS_SCRIPT_URL, true);
-  xhr.setRequestHeader("Content-Type", "text/plain");
-  
-  // Set up a quiet background success checker
-  xhr.onload = function() {
-    try {
-      const res = JSON.parse(xhr.responseText);
-      if (res.success) {
-        console.log(`✓ Cloud Sync Successful. logged [${sheetAnswer}] for Voter VANID: ${voterId}`);
-      } else {
-        console.error("Cloud Write Deflection:", res.error);
+      if (fractions.length > 0) {
+        progressTab.getRange(2, newProgressCol, fractions.length, 1)
+          .setValues(fractions)
+          .setHorizontalAlignment("center");
       }
-    } catch (e) {
-      console.error("Malformed background API text return frame:", e);
     }
-  };
+  }
 
-  // Compile and transmit our payload package straight to your doPost engine
-  xhr.send(JSON.stringify({ 
-    voterId: voterId, // This holds the immutable NGP VAN ID string
-    memberName: memberName, 
-    answer: sheetAnswer 
-  }));
-}
+  // ── Add member to SummaryStats ──
+  const summaryTab = ss.getSheetByName("SummaryStats");
+  if (summaryTab) {
+    const summaryLastCol = summaryTab.getLastColumn();
+    const summaryHeaders = summaryTab.getRange(1, 1, 1, summaryLastCol).getValues()[0];
 
+    const alreadyInSummary = summaryHeaders.some(h => String(h).trim() === memberName.trim());
+    if (!alreadyInSummary) {
+      const newSummaryCol = summaryLastCol + 1;
+      const summaryColLetter = columnToLetter(newSummaryCol);
 
+      summaryTab.getRange(1, newSummaryCol).setValue(memberName)
+        .setBackground("#1a2744").setFontColor("white").setFontWeight("bold");
+      summaryTab.setColumnWidth(newSummaryCol, 140);
 
-// ─── SETUP ──────────────────────────────────────────────────────────────────
-// ─── LOAD AGES FROM SHEET ───────────────────────────────────────────────────
-// Fetch real ages from the sheet via Apps Script on page load
-(function loadAges() {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", APPS_SCRIPT_URL + "?action=ages", true);
-  xhr.onload = function() {
-    try {
-      const data = JSON.parse(xhr.responseText);
-      if (data.ages && Array.isArray(data.ages)) {
-        data.ages.forEach((age, i) => {
-          if (VOTERS[i]) VOTERS[i].age = age;
-        });
-        console.log("Ages loaded for " + data.ages.length + " voters");
-      }
-    } catch(e) {
-      console.log("Could not load ages:", e);
+      // Write the same live COUNTIF formulas as buildSummaryStats does
+      const formulas = [
+        [`=COUNTIF(Sheet1!$${colLetter}$2:$${colLetter}$${lastRow}, "Y")`],
+        [`=COUNTIF(Sheet1!$${colLetter}$2:$${colLetter}$${lastRow}, "KO")`],
+        [`=COUNTIF(Sheet1!$${colLetter}$2:$${colLetter}$${lastRow}, "N")`],
+        [`=SUM(${summaryColLetter}2:${summaryColLetter}4)`],
+        [`=(COUNTA(Sheet1!$A$2:$A$${lastRow})) - ${summaryColLetter}5`]
+      ];
+
+      summaryTab.getRange(2, newSummaryCol, formulas.length, 1)
+        .setFormulas(formulas)
+        .setHorizontalAlignment("center");
     }
-  };
-  xhr.send();
-})();
+  }
 
-document.getElementById('member-select').addEventListener('change', function() {
-  document.getElementById('start-btn').disabled = !this.value;
-});
-
-function startGame() {
-  const selectEl = document.getElementById('member-select');
-  const selectedKey = selectEl.value;
-  if (!selectedKey) return;
-  
-  // Convert standard internal key value over to text name string
-  const memberName = selectEl.options[selectEl.selectedIndex].text.trim();
-  currentMember = memberName; // Match string value key configuration parameters
-
-  // Swap visual presentation viewport panel grids
-  document.getElementById('member-screen').style.display = 'none';
-  document.getElementById('game-screen').style.display = 'flex';
-  document.getElementById('header-stats').style.display = 'flex';
-  document.getElementById('member-label').textContent = memberName;
-  
-  // WIPE STAT CHIPS TO EMPTY UNTIL LAUNCH SEQUENCE FETCH IS COMPLETE
-  responses = { know: 0, maybe: 0, skip: 0 };
-  actionHistory = [];
-  
-  // PULL REAL-TIME Woodstock ROAD MAP RECORDS FOR THIS USER LIVE
-  fetchRoadsData().then(() => {
-    // After streets load, automatically execute our Recommended Auto-Pick engine sequence
-    autoPickUnfinishedRoad();
-  });
+  return newCol;
 }
 
-function initializeQueue(voterArray) {
-  // Sort alphabetically by name
-  queue = [...voterArray].sort((a, b) => a.name.localeCompare(b.name));
-  
-  // Calibrate baseline tracking properties definitions
-  totalForMember = queue.length;
-  
-  // Display cards immediately on view panels
-  renderCards();
-  updateStats();
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
-// ─── ROAD FILTER ────────────────────────────────────────────────────────────
-function buildRoadFilter() {
-  const select = document.getElementById('road-filter');
-  // Extract unique roads from voter list, sorted alphabetically
-  const roads = [...new Set(VOTERS.map(v => extractRoad(v.address)))].sort();
-  
-  select.innerHTML = '<option value="All">All roads</option>';
-  roads.forEach(road => {
-    const opt = document.createElement('option');
-    const votersOnRoad = VOTERS.filter(v => extractRoad(v.address) === road);
-    const allDone = votersOnRoad.every(v => actionHistory.some(a => a.voter.id === v.id));
-    opt.value = road;
-    opt.textContent = allDone ? `${road} ✓` : road;
-    if (allDone) opt.style.color = '#b0a898';
-    select.appendChild(opt);
-  });
-  select.value = activeFilter;
-  select.className = 'filter-select' + (activeFilter !== 'All' ? ' active' : '');
+// ============================================================
+// CORS HANDLER — needed when called from a browser
+// ============================================================
+function doOptions(e) {
+  return ContentService
+    .createTextOutput("")
+    .setMimeType(ContentService.MimeType.TEXT);
 }
 
-function extractRoad(address) {
-  // Strip leading house number, return road name
-  return address.replace(/^\d+\s+/, '').trim();
-}
 
-function setFilter(val) {
-  activeFilter = val;
-  const select = document.getElementById('road-filter');
-  select.className = 'filter-select' + (val !== 'All' ? ' active' : '');
-  let filtered = VOTERS.filter(v => !actionHistory.some(a => a.voter.id === v.id));
-  if (val !== 'All') filtered = filtered.filter(v => extractRoad(v.address) === val);
-  filtered.sort((a, b) => a.name.localeCompare(b.name));
-  queue = filtered;
-  renderCards();
-  updateStats();
-}
+// ============================================================
+// UTILITY — run to see a summary of current coverage
+// ============================================================
+function coverageSummary() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  const lastRow = sheet.getLastRow();
+  const lastCol = sheet.getLastColumn();
 
-// ─── RENDER ─────────────────────────────────────────────────────────────────
-// ─── RENDER VISUAL CARD DECK STACK ──────────────────────────────────────────
-function renderCards() {
-  const stack = document.getElementById('card-stack');
-  if (!stack) return;
-  
-  stack.innerHTML = '';
+  const data = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+  const headers = data[0];
 
-  if (queue.length === 0) {
-    stack.innerHTML = `<div class="voter-card active" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:28px;">
-      <div style="font-size:2rem">✓</div>
-      <div style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--navy)">
-        ${ACTIVE_ROAD === "AUTO_PICK" || ACTIVE_ROAD === "All" ? "All voters reviewed!" : `All done on ${ACTIVE_ROAD}!`}
-      </div>
-      <div style="font-size:0.8rem;color:var(--muted);">
-        Ready for another street?
-      </div>
-      <button id="next-road-btn" style="
-        margin-top:4px;
-        padding:11px 24px;
-        background:var(--navy);
-        color:white;
-        border:none;
-        border-radius:3px;
-        font-family:'DM Sans',sans-serif;
-        font-size:0.9rem;
-        font-weight:500;
-        cursor:pointer;
-        letter-spacing:0.02em;
-      ">Pick another road →</button>
-    </div>`;
+  // Find member columns
+  const memberCols = [];
+  for (let c = MEMBERS_START - 1; c < headers.length; c++) {
+    if (headers[c]) memberCols.push(c);
+  }
 
-    document.getElementById('next-road-btn').addEventListener('click', function() {
-      console.log("Next road button clicked");
-      autoPickUnfinishedRoad();
+  let totalVoters = lastRow - 1;
+  let coveredY = 0;      // at least one Y
+  let coveredKO = 0;     // at least one KO (no Y)
+  let uncovered = 0;     // all blank or N
+
+  for (let r = 1; r < data.length; r++) {
+    let hasY = false, hasKO = false;
+    memberCols.forEach(c => {
+      if (data[r][c] === "Y") hasY = true;
+      if (data[r][c] === "KO") hasKO = true;
     });
-
-    return;
+    if (hasY) coveredY++;
+    else if (hasKO) coveredKO++;
+    else uncovered++;
   }
 
-  // Render the top 3 visible layered cards gracefully
-  for (let i = Math.min(2, queue.length - 1); i >= 0; i--) {
-    const card = buildCard(queue[i], i);
-    stack.appendChild(card);
-  }
+  // Member completion rates
+  let memberSummary = "Member completion:\n";
+  memberCols.forEach(c => {
+    const name = headers[c];
+    const reviewed = data.slice(1).filter(row => row[c] !== "").length;
+    const pct = Math.round((reviewed / totalVoters) * 100);
+    memberSummary += `  ${name}: ${reviewed}/${totalVoters} (${pct}%)\n`;
+  });
+
+  SpreadsheetApp.getUi().alert(
+    `COVERAGE SUMMARY\n` +
+    `─────────────────────\n` +
+    `Total voters: ${totalVoters}\n` +
+    `Known personally (Y): ${coveredY} (${Math.round(coveredY/totalVoters*100)}%)\n` +
+    `Known of (KO): ${coveredKO} (${Math.round(coveredKO/totalVoters*100)}%)\n` +
+    `Uncovered: ${uncovered} (${Math.round(uncovered/totalVoters*100)}%)\n\n` +
+    memberSummary
+  );
 }
+
+// ============================================================
+// TEST — run this manually to verify sheet writing works
+// ============================================================
+function testWrite() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const memberCol = findOrCreateMemberColumn(sheet, "Ivar McDonald");
+  sheet.getRange(13, memberCol).setValue("Y");
+  Logger.log("Test write complete — check row 13, column " + memberCol);
+}
+
+// ============================================================
+// SUMMARY LOGIC — Writes LIVE Formulas to the SummaryStats Tab
+// ============================================================
+function buildSummaryStats(sheet, uniqueRoads, rawRoadList, rawMemberValues, lastRow) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // 1. Clean Rebuild of the Summary Stats Tab
+  let summaryTab = ss.getSheetByName("SummaryStats");
+  if (summaryTab) {
+    ss.deleteSheet(summaryTab);
+  }
+  summaryTab = ss.insertSheet("SummaryStats");
+
+  // 2. Build Horizontal Headers (Member Names)
+  const members = getMembers(sheet);
+  const headers = ["Metric"];
+  members.forEach(member => { headers.push(member); });
+  summaryTab.getRange(1, 1, 1, headers.length).setValues([headers]);
+
+  // 3. Set up rows for our Formula Matrix
+  const formulaMatrix = [
+    ["Total Yes (Y)"],
+    ["Total Know Of (KO)"],
+    ["Total Don't Know (N)"],
+    ["Grand Total Reviewed"],
+    ["Remaining Voters in Town"]
+  ];
+
+  // 4. Generate dynamic =COUNTIF formulas for every single member column
+  for (let m = 0; m < members.length; m++) {
+    const sheet1Headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const memberColumnIndex = sheet1Headers.findIndex(h => h.trim() === members[m].trim()) + 1;
     
-function buildCard(voter, stackPos) {
-  const card = document.createElement('div');
-  const cls = stackPos === 0 ? 'active' : stackPos === 1 ? 'behind-1' : 'behind-2';
-  card.className = `voter-card ${cls}`;
-  card.dataset.id = voter.id;
+    if (memberColumnIndex > 0) {
+      const colLetter = columnToLetter(memberColumnIndex);
+      const lastRowSheet1 = sheet.getLastRow();
+      
+      // Build the live formula strings pointing to Sheet1!
+      const yesFormula = `=COUNTIF(Sheet1!$${colLetter}$2:$${colLetter}$${lastRowSheet1}, "Y")`;
+      const koFormula  = `=COUNTIF(Sheet1!$${colLetter}$2:$${colLetter}$${lastRowSheet1}, "KO")`;
+      const noFormula  = `=COUNTIF(Sheet1!$${colLetter}$2:$${colLetter}$${lastRowSheet1}, "N")`;
+      
+      // The current column letter on the SummaryStats sheet itself (B, C, D...)
+      const summaryColLetter = columnToLetter(m + 2); 
+      const totalReviewedFormula = `=SUM(${summaryColLetter}2:${summaryColLetter}4)`;
+      const remainingFormula = `=(COUNTA(Sheet1!$A$2:$A$${lastRowSheet1})) - ${summaryColLetter}5`;
 
-  const cardNum = actionHistory.length + 1;
-
-  card.innerHTML = `
-    <div class="card-num">${Math.min(cardNum, totalForMember)} / ${totalForMember}</div>
-    <div class="card-neighborhood">📍 ${ACTIVE_ROAD}</div>
-    <div class="card-name">${voter.name}</div>
-    <div class="card-address">${voter.address}</div>
-    <div class="card-meta">
-      ${voter.age ? `<span>Age ${voter.age}</span>` : ""}
-    </div>
-  `;
-  return card;
-}
-
-// ─── RESPOND ────────────────────────────────────────────────────────────────
-function respond(answer) {
-  if (animating || queue.length === 0) return;
-  animating = true;
-
-  const voter = queue[0];
-  actionHistory.push({ voter: voter, answer: answer });
-  
-  // 1. FIRE WRITE DATA TO SPREADSHEET ENGINE
-  saveResponse(currentMember, voter.id, answer);
-  
-  // 2. INSTANT LIVE UI UPDATE: Increment our local cache totals immediately!
-  responses[answer]++; // Advance active session counters (Know, Know of, Don't Know)
-  
-  // Locate the active road in our memory array and tick its reviewed counter up by 1
-  const activeRoadObj = ALL_ROADS.find(r => r.name === ACTIVE_ROAD);
-  if (activeRoadObj) {
-    activeRoadObj.reviewed = Math.min(activeRoadObj.total, (parseInt(activeRoadObj.reviewed, 10) || 0) + 1);
-    if (activeRoadObj.reviewed >= activeRoadObj.total) {
-      activeRoadObj.isDone = true;
+      // Push formulas into our data matrix
+      formulaMatrix[0].push(yesFormula);
+      formulaMatrix[1].push(koFormula);
+      formulaMatrix[2].push(noFormula);
+      formulaMatrix[3].push(totalReviewedFormula);
+      formulaMatrix[4].push(remainingFormula);
+    } else {
+      // Fallback placeholders if a column header isn't found
+      formulaMatrix[0].push(0); formulaMatrix[1].push(0); formulaMatrix[2].push(0); formulaMatrix[3].push(0); formulaMatrix[4].push(0);
     }
   }
 
-  // 3. SHIFT CARD DECK
-  queue.shift(); 
+ // 5. Write the Formula strings directly to the cells!
+  // Extract just the text labels for Column A
+  const labelsOnly = [
+    [formulaMatrix[0][0]],
+    [formulaMatrix[1][0]],
+    [formulaMatrix[2][0]],
+    [formulaMatrix[3][0]],
+    [formulaMatrix[4][0]]
+  ];
 
-  // Animate top card out cleanly
-  const stack = document.getElementById('card-stack');
-  const topCard = stack.querySelector('.voter-card.active');
-  if (topCard) {
-    topCard.classList.add(`exit-${answer}`);
+  // Extract ONLY the formula strings for Columns B and beyond
+  const formulasOnly = [];
+  for (let r = 0; r < formulaMatrix.length; r++) {
+    formulasOnly.push(formulaMatrix[r].slice(1));
   }
 
-  // Recalculate stats using our freshly updated local values
-  updateStats();
+  // 1. Write plain text labels safely to Column A
+  summaryTab.getRange(2, 1, labelsOnly.length, 1).setValues(labelsOnly);
 
-  setTimeout(() => {
-    animating = false;
-    renderCards();
-    
-    // If the user just completed the last card on this specific street, refresh everything!
-    if (queue.length === 0) {
-      // Quietly reload the dropdown lists from the server to pull down official background counts
-      fetchRoadsData();
-    }
-  }, 320);
-}
+  // 2. Write the live formulas seamlessly to Columns B through the end
+  summaryTab.getRange(2, 2, formulasOnly.length, members.length).setFormulas(formulasOnly);
 
-function undo() {
-  if (animating || actionHistory.length === 0) return;
-  animating = true;
-
-  // 1. Pop the last action off our local history stack
-  const lastAction = actionHistory.pop();
-  const voter = lastAction.voter;
-  const answer = lastAction.answer;
-
-  // 2. Roll back our live score chips immediately on the user's screen
-  responses[answer] = Math.max(0, responses[answer] - 1);
-  
-  // 3. Decrement our active road tracking cache array values
-  const activeRoadObj = ALL_ROADS.find(r => r.name === ACTIVE_ROAD);
-  if (activeRoadObj) {
-    activeRoadObj.reviewed = Math.max(0, (parseInt(activeRoadObj.reviewed, 10) || 1) - 1);
-    activeRoadObj.isDone = false;
-  }
-
-  // 4. Restore the voter card right back to the front of your queue list
-  queue.unshift(voter);
-
-  // 5. Fire an erase command to the Google Sheet using their unique VANID
-  const select = document.getElementById('member-select');
-  const memberName = select.options[select.selectedIndex].text.trim();
-  
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", APPS_SCRIPT_URL, true);
-  xhr.setRequestHeader("Content-Type", "text/plain");
-  
-  // We send an answer string of "" which tells our doPost script to wipe the cell content clean
-  xhr.send(JSON.stringify({ 
-    voterId: voter.id, 
-    memberName: memberName, 
-    answer: "" 
-  }));
-
-  // 6. Smoothly animate the card flying back onto the deck stack layout
-  const stack = document.getElementById('card-stack');
-  renderCards();
-  
-  const topCard = stack.querySelector('.voter-card.active');
-  if (topCard) {
-    topCard.classList.add(`exit-${answer}`);
-    topCard.offsetHeight; // Force layout engine reflow
-    topCard.classList.remove(`exit-${answer}`);
-  }
-
-  // 7. Refresh your interface numbers and dropdown meters dynamically
-  updateStats();
-
-  setTimeout(() => {
-    animating = false;
-  }, 320);
-}
-
-// ─── STATS ──────────────────────────────────────────────────────────────────
-function updateStats() {
-  // 1. Calculate how many reviews this member has completed across the whole town (Tab 2 Data)
-  const townWideReviewed = ALL_ROADS.reduce((sum, r) => sum + (parseInt(r.reviewed, 10) || 0), 0);
-  const townWideTotal = ALL_ROADS.reduce((sum, r) => sum + (parseInt(r.total, 10) || 0), 0);
-  
-  // 2. Calculate stats for the actively selected road queue deck
-  const totalOnThisRoad = ALL_ROADS.find(r => r.name === ACTIVE_ROAD)?.total || 0;
-  const remainingOnThisRoad = queue.length;
-  const reviewedOnThisRoad = Math.max(0, totalOnThisRoad - remainingOnThisRoad);
-  
-  // 3. Update the primary game screen progress bar fills
-  const pct = totalOnThisRoad > 0 ? (reviewedOnThisRoad / totalOnThisRoad) * 100 : 0;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-count').textContent = `${reviewedOnThisRoad} of ${totalOnThisRoad} reviewed on ${ACTIVE_ROAD}`;
-
-  // 4. Update the three action score chips directly beneath the progress bar (Current Session Counts)
-  document.getElementById('score-know').textContent = responses.know;
-  document.getElementById('score-maybe').textContent = responses.maybe;
-  document.getElementById('score-skip').textContent = responses.skip;
-
- // 5. UPDATE NAVIGATION HEADER STATS (Town-Wide Cumulative Dashboard Summary)
-  // Reviewed: Live count from your RoadProgress metrics
-  document.getElementById('h-reviewed').textContent = townWideReviewed;
-  
-  // Remaining: Live calculation of what's left in the entire town
-  document.getElementById('h-remaining').textContent = Math.max(0, townWideTotal - townWideReviewed);
-  
-  // FIX: Force the layout element to display the exact number returned by the server, 
-  // plus any clicks made during this active swiping session!
-  const baselineKnows = parseInt(GLOBAL_KNOWS_TOTAL, 10) || 0;
-  const sessionClicks = parseInt(responses.know, 10) || 0;
-  
-  document.getElementById('h-know').textContent = baselineKnows + sessionClicks;
-  console.log(`UI Header Engine updated display text to: ${baselineKnows + sessionClicks}`);
-
-  // 6. Force the road pulldown menu options text labels to re-render live on every swipe
-  const select = document.getElementById('road-filter');
-  if (select) {
-    const currentSelectionValue = select.value;
-    buildRoadDropdown();
-    select.value = currentSelectionValue; // Keep the active road highlighted without jumping
+  // Apply clean styling themes
+  summaryTab.setFrozenColumns(1);
+  summaryTab.getRange(1, 1, 1, headers.length).setBackground("#1a2744").setFontColor("white").setFontWeight("bold");
+  summaryTab.getRange(2, 1, formulaMatrix.length, 1).setFontWeight("bold").setBackground("#faf8f4");
+  summaryTab.getRange(5, 1, 2, headers.length).setFontWeight("bold"); // Bold the totals rows
+  summaryTab.getRange(5, 1, 1, headers.length).setBackground("#e8f0fe"); // Light blue highlight for Total Reviewed
+  summaryTab.getRange(6, 1, 1, headers.length).setBackground("#fdf2e9"); // Light orange highlight for Remaining
+  summaryTab.getRange(2, 2, formulaMatrix.length, members.length).setHorizontalAlignment("center");
+  summaryTab.setColumnWidth(1, 200);
+  for (let c = 2; c <= headers.length; c++) {
+    summaryTab.setColumnWidth(c, 140);
   }
 }
 
-// ─── KEYBOARD ───────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  // Guard clause: Don't do anything if we aren't actively looking at the game screen
-  if (document.getElementById('game-screen').style.display === 'none') return;
-  
-  // Guard clause: Don't trigger game swipes if typing inside a text input box
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-
-  if (e.key === 'k' || e.key === 'K') respond('know');
-  if (e.key === 'm' || e.key === 'M') respond('maybe');
-  if (e.key === 'n' || e.key === 'N') respond('skip');
-  
-  // NEW: Catch Backspace or Z keys to trigger an undo operation
-  if (e.key === 'Backspace' || e.key === 'z' || e.key === 'Z') {
-    e.preventDefault(); // Prevents Backspace from navigating away from the webpage
-    undo();
+// Helper utility function to turn numbers into column letters (e.g. 2 -> "B", 28 -> "AB")
+function columnToLetter(column) {
+  let temp, letter = "";
+  while (column > 0) {
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(65 + temp) + letter;
+    column = (column - temp - 1) / 26;
   }
-});
-
-// ─── DONE ───────────────────────────────────────────────────────────────────
-function showDone(memberName) {
-  const counts = responses;
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('done-screen').style.display = 'flex';
-
-  const total = counts.know + counts.maybe + counts.skip;
-  document.getElementById('done-message').textContent =
-    `${memberName}, you reviewed all ${total} voters. You personally know ${counts.know} of them — that's ${counts.know} conversations the DTC couldn't have without you.`;
-
-  document.getElementById('final-know').textContent = counts.know;
-  document.getElementById('final-maybe').textContent = counts.maybe;
-  document.getElementById('final-skip').textContent = counts.skip;
+  return letter;
 }
-
-function pauseGame() {
-  const memberName = document.getElementById('member-select').options[document.getElementById('member-select').selectedIndex].text;
-  const counts = responses;
-  const totalReviewed = actionHistory.length;
-  const remaining = totalForMember - totalReviewed;
-
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('pause-screen').style.display = 'flex';
-
-  document.getElementById('pause-message').textContent =
-    `Your progress is saved, ${memberName}. You've reviewed ${totalReviewed} voters with ${remaining} still to go. Come back anytime — you'll pick up right where you left off.`;
-
-  document.getElementById('pause-know').textContent = counts.know;
-  document.getElementById('pause-maybe').textContent = counts.maybe;
-  document.getElementById('pause-skip').textContent = counts.skip;
-}
-
-function resumeGame() {
-  document.getElementById('pause-screen').style.display = 'none';
-  document.getElementById('game-screen').style.display = 'flex';
-}
-
-function resetGame() {
-  actionHistory = []; // Clear the history stack when escaping or resetting
-  currentMember = null;
-  queue = [];
-  responses = { know: 0, maybe: 0, skip: 0 };
-  activeFilter = "All";
-  document.getElementById('done-screen').style.display = 'none';
-  document.getElementById('pause-screen').style.display = 'none';
-  document.getElementById('member-screen').style.display = 'flex';
-  document.getElementById('header-stats').style.display = 'none';
-  document.getElementById('member-select').value = '';
-  document.getElementById('start-btn').disabled = true;
-}
-    
-</script>
-</body>
-</html>
