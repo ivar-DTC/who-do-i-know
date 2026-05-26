@@ -7,13 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #1a2744;
+    --navy: #497AD2;
     --blue: #2a4494;
-    --gold: #c8a84b;
-    --cream: #f5f0e8;
+    --gold: #FFC13A;
+    --cream: #EFF5FB;
     --sage: #7a9e7e;
     --red: #c0392b;
-    --light: #faf8f4;
+    --light: #EFF5FB;
     --mid: #e8e2d6;
     --text: #2c2c2c;
     --muted: #7a7468;
@@ -46,25 +46,25 @@
     gap: 14px;
   }
 
-  .logo-star {
-    width: 36px;
-    height: 36px;
-    color: var(--gold);
+  .logo-img {
+    height: 64px;
+    width: auto;
   }
 
   .logo-text {
     font-family: 'Playfair Display', serif;
     color: white;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
+    font-weight: 700;
     line-height: 1.2;
   }
 
   .logo-text span {
     display: block;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-    color: #a0aec0;
+    font-weight: 500;
+    color: #e2e8f0;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -82,16 +82,19 @@
   .stat-pill .num {
     font-family: 'Playfair Display', serif;
     font-size: 1.4rem;
+    font-weight: 700;
     color: var(--gold);
     display: block;
   }
 
   .stat-pill .lbl {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #a0aec0;
+    color: #e2e8f0;
   }
+
 
   /* MEMBER SELECT SCREEN */
   #member-screen {
@@ -667,9 +670,7 @@
     
 <header>
   <div class="logo">
-    <svg class="logo-star" viewBox="0 0 36 36" fill="none">
-      <polygon points="18,2 22,13 34,13 24,20 28,32 18,25 8,32 12,20 2,13 14,13" fill="currentColor"/>
-    </svg>
+   <img src="https://ivar-dtc.github.io/who-do-i-know/WDTC-logo.png" alt="Woodstock DTC" class="logo-img" />
     <div class="logo-text">
       Woodstock DTC
       <span>Neighbor Network</span>
@@ -697,51 +698,11 @@
     <h1>Who are you?</h1>
     <p>Select your name to begin. You'll only see voters you haven't reviewed yet — pick up right where you left off anytime.</p>
     <label for="member-select">Your name</label>
+
     <select id="member-select">
       <option value="">— Select your name —</option>
-      <option value="aino-kardestuncer">Aino Kardestuncer</option>
-      <option value="alana-frenkel">Alana Frenkel</option>
-      <option value="bob-freudenberger">Bob Freudenberger</option>
-      <option value="charlene-perkins-cutler">Charlene Perkins Cutler</option>
-      <option value="charles-super">Charles Super</option>
-      <option value="chelsea-weiss-baum">Chelsea Weiss Baum</option>
-      <option value="christine-lessig">Christine Lessig</option>
-      <option value="crystal-adams">Crystal Adams</option>
-      <option value="emily-g-hayden">Emily G. Hayden</option>
-      <option value="ethan-werstler">Ethan Werstler</option>
-      <option value="gail-dickenson">Gail Dickenson</option>
-      <option value="glen-lessig">Glen Lessig</option>
-      <option value="greg-kline">Greg Kline</option>
-      <option value="ivar-mcdonald">Ivar McDonald</option>
-      <option value="ives-mcdonald">Ives McDonald</option>
-      <option value="jacob-tworzydlo">Jacob Tworzydlo</option>
-      <option value="jessica-weaver-boose">Jessica Weaver Boose</option>
-      <option value="jim-kaeding">Jim Kaeding</option>
-      <option value="joan-polulech">Joan Polulech</option>
-      <option value="joe-polulech">Joe Polulech</option>
-      <option value="john-day">John Day</option>
-      <option value="karen-ryker">Karen Ryker</option>
-      <option value="kathleen-barach">Kathleen Barach</option>
-      <option value="kevin-bernier">Kevin Bernier</option>
-      <option value="laura-graves">Laura Graves</option>
-      <option value="margie-wholean">Margie Wholean</option>
-      <option value="matthew-anderson">Matthew Anderson</option>
-      <option value="matthew-bennett">Matthew Bennett</option>
-      <option value="michael-shepherd">Michael Shepherd</option>
-      <option value="peg-wilson">Peg Wilson</option>
-      <option value="polly-hayden">Polly Hayden</option>
-      <option value="r-sky-bridgman">R. Sky Bridgman</option>
-      <option value="rebecca-hyde">Rebecca Hyde</option>
-      <option value="rick-canavan">Rick Canavan</option>
-      <option value="sara-harkness">Sara Harkness</option>
-      <option value="sarah-bridgman">Sarah Bridgman</option>
-      <option value="sean-connor">Sean Connor</option>
-      <option value="stacy-bennett">Stacy Bennett</option>
-      <option value="su-connor">Su Connor</option>
-      <option value="suzanne-kline">Suzanne Kline</option>
-      <option value="suzanne-woodward">Suzanne Woodward</option>
-      <option value="vincent-tocci">Vincent Tocci</option>
     </select>
+      
     <button class="btn-primary" id="start-btn" disabled onclick="startGame()">Begin Review</button>
 
     <div class="add-user-row">
@@ -896,60 +857,74 @@ function toggleAddUser() {
   if (!visible) document.getElementById('new-first').focus();
 }
 
-function addUser() {
+async function addUser() {
   const first = document.getElementById('new-first').value.trim();
   const last = document.getElementById('new-last').value.trim();
   if (!first || !last) return;
 
   const fullName = `${first} ${last}`;
-  const key = `${first}-${last}`.toLowerCase().replace(/\s+/g, '-');
+  const btn = document.getElementById('add-user-btn');
+  btn.disabled = true;
+  btn.textContent = 'Adding...';
 
-  // Add to dropdown if not already there
-  const select = document.getElementById('member-select');
-  const exists = [...select.options].some(o => o.value === key);
-  if (!exists) {
-    const opt = document.createElement('option');
-    opt.value = key;
-    opt.textContent = `${fullName} *`;
-    // Insert before the last hard-coded member, after the placeholder
-    select.appendChild(opt);
-    // Persist custom users to localStorage
-    const custom = getCustomUsers();
-    custom[key] = fullName;
-    localStorage.setItem('dtc_custom_users', JSON.stringify(custom));
-  }
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'addMember', name: fullName })
+    });
+    const result = await response.json();
 
-  // Select them and enable start
-  select.value = key;
-  document.getElementById('start-btn').disabled = false;
+    if (!result.success) {
+      alert('Could not add member: ' + (result.error || 'Unknown error'));
+      return;
+    }
 
-  // Hide form
-  document.getElementById('add-user-form').style.display = 'none';
-  document.getElementById('new-first').value = '';
-  document.getElementById('new-last').value = '';
-}
-
-function getCustomUsers() {
-  try { return JSON.parse(localStorage.getItem('dtc_custom_users') || '{}'); }
-  catch { return {}; }
-}
-
-function loadCustomUsers() {
-  const custom = getCustomUsers();
-  const select = document.getElementById('member-select');
-  Object.entries(custom).forEach(([key, name]) => {
-    if (![...select.options].some(o => o.value === key)) {
+    const confirmedName = result.name;
+    const select = document.getElementById('member-select');
+    const exists = [...select.options].some(o => o.text === confirmedName);
+    if (!exists) {
       const opt = document.createElement('option');
-      opt.value = key;
-      opt.textContent = `${name} *`;
+      opt.value = confirmedName;
+      opt.textContent = confirmedName;
       select.appendChild(opt);
     }
-  });
+
+    select.value = confirmedName;
+    document.getElementById('start-btn').disabled = false;
+    document.getElementById('add-user-form').style.display = 'none';
+    document.getElementById('new-first').value = '';
+    document.getElementById('new-last').value = '';
+
+  } catch (err) {
+    alert('Network error adding member: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Add & select';
+  }
 }
 
-// Enable/disable add-user button as fields are filled
+async function populateMemberDropdown() {
+  try {
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=members`);
+    const data = await response.json();
+    if (!data.success || !Array.isArray(data.members)) return;
+
+    const select = document.getElementById('member-select');
+    select.innerHTML = '<option value="">— Select your name —</option>';
+    data.members.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.error('Could not load member list:', err);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  loadCustomUsers();
+  populateMemberDropdown();
   ['new-first', 'new-last'].forEach(id => {
     document.getElementById(id).addEventListener('input', () => {
       const first = document.getElementById('new-first').value.trim();
@@ -961,15 +936,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+    
 
 
-function storageKey(member) { return `dtc_reviewed_${member}`; }
 
-function getReviewed(member) {
-  try {
-    return JSON.parse(localStorage.getItem(storageKey(member)) || "{}");
-  } catch { return {}; }
-}
 
 // ─── BACKEND CONFIG ─────────────────────────────────────────────────────────
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCOsKYQV1WBYvhPEMtUvnP0vfETGT65kvSEXUQJ0RJZ_T-_IzFeztpZWgViU3p9win/exec";
@@ -1157,7 +1127,7 @@ function saveResponse(member, voterId, answer) {
   // 2. Fetch the clean display name of the current user
   const select = document.getElementById('member-select');
   const rawName = select.options[select.selectedIndex].text;
-  const memberName = rawName.replace(/\s*\*$/, '').trim();
+  const memberName = select.options[select.selectedIndex].text.trim();
 
   // 3. Securely dispatch the write command using the unique VANID
   // We pass voterId as our primary anchor key, cutting out fragile row index offsets completely!
@@ -1187,12 +1157,7 @@ function saveResponse(member, voterId, answer) {
   }));
 }
 
-function getResponseCounts(member) {
-  const reviewed = getReviewed(member);
-  const counts = { know: 0, maybe: 0, skip: 0 };
-  Object.values(reviewed).forEach(r => { if (counts[r.answer] !== undefined) counts[r.answer]++; });
-  return counts;
-}
+
 
 // ─── SETUP ──────────────────────────────────────────────────────────────────
 // ─── LOAD AGES FROM SHEET ───────────────────────────────────────────────────
@@ -1226,7 +1191,7 @@ function startGame() {
   if (!selectedKey) return;
   
   // Convert standard internal key value over to text name string
-  const memberName = selectEl.options[selectEl.selectedIndex].text.replace(/\s*\*$/, '').trim();
+  const memberName = selectEl.options[selectEl.selectedIndex].text.trim();
   currentMember = memberName; // Match string value key configuration parameters
 
   // Swap visual presentation viewport panel grids
@@ -1263,12 +1228,12 @@ function buildRoadFilter() {
   const select = document.getElementById('road-filter');
   // Extract unique roads from voter list, sorted alphabetically
   const roads = [...new Set(VOTERS.map(v => extractRoad(v.address)))].sort();
-  const reviewed = getReviewed(currentMember);
+  
   select.innerHTML = '<option value="All">All roads</option>';
   roads.forEach(road => {
     const opt = document.createElement('option');
     const votersOnRoad = VOTERS.filter(v => extractRoad(v.address) === road);
-    const allDone = votersOnRoad.every(v => reviewed[v.id]);
+    const allDone = votersOnRoad.every(v => actionHistory.some(a => a.voter.id === v.id));
     opt.value = road;
     opt.textContent = allDone ? `${road} ✓` : road;
     if (allDone) opt.style.color = '#b0a898';
@@ -1287,8 +1252,7 @@ function setFilter(val) {
   activeFilter = val;
   const select = document.getElementById('road-filter');
   select.className = 'filter-select' + (val !== 'All' ? ' active' : '');
-  const reviewed = getReviewed(currentMember);
-  let filtered = VOTERS.filter(v => !reviewed[v.id]);
+  let filtered = VOTERS.filter(v => !actionHistory.some(a => a.voter.id === v.id));
   if (val !== 'All') filtered = filtered.filter(v => extractRoad(v.address) === val);
   filtered.sort((a, b) => a.name.localeCompare(b.name));
   queue = filtered;
@@ -1349,9 +1313,7 @@ function buildCard(voter, stackPos) {
   card.className = `voter-card ${cls}`;
   card.dataset.id = voter.id;
 
-  const reviewed = getReviewed(currentMember);
-  const activeRoadReviewedCount = VOTERS.filter(v => reviewed[v.id]).length;
-  const cardNum = activeRoadReviewedCount + 1;
+  const cardNum = actionHistory.length + 1;
 
   card.innerHTML = `
     <div class="card-num">${Math.min(cardNum, totalForMember)} / ${totalForMember}</div>
@@ -1437,7 +1399,7 @@ function undo() {
 
   // 5. Fire an erase command to the Google Sheet using their unique VANID
   const select = document.getElementById('member-select');
-  const memberName = select.options[select.selectedIndex].text.replace(/\s*\*$/, '').trim();
+  const memberName = select.options[select.selectedIndex].text.trim();
   
   const xhr = new XMLHttpRequest();
   xhr.open("POST", APPS_SCRIPT_URL, true);
@@ -1535,7 +1497,7 @@ document.addEventListener('keydown', e => {
 
 // ─── DONE ───────────────────────────────────────────────────────────────────
 function showDone(memberName) {
-  const counts = getResponseCounts(currentMember);
+  const counts = responses;
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('done-screen').style.display = 'flex';
 
@@ -1550,9 +1512,8 @@ function showDone(memberName) {
 
 function pauseGame() {
   const memberName = document.getElementById('member-select').options[document.getElementById('member-select').selectedIndex].text;
-  const counts = getResponseCounts(currentMember);
-  const reviewed = getReviewed(currentMember);
-  const totalReviewed = Object.keys(reviewed).length;
+  const counts = responses;
+  const totalReviewed = actionHistory.length;
   const remaining = totalForMember - totalReviewed;
 
   document.getElementById('game-screen').style.display = 'none';
