@@ -229,6 +229,20 @@ function doGet(e) {
     return jsonResponse({ status: "ok", message: "DTC Network API is running perfectly." });
   }
   
+  // NEW: action=members — Returns all member column headers from Sheet1 (col 14+)
+  if (action === "members") {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    const lastCol = sheet.getLastColumn();
+    const headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    const members = [];
+    for (let c = MEMBERS_START - 1; c < headerRow.length; c++) {
+      const name = String(headerRow[c]).trim();
+      if (name && name !== "") members.push(name);
+    }
+    return jsonResponse({ success: true, members });
+  }
+
   // 1a. Serve the raw data rows mapped into clean objects for the client browser engine
   if (action === "voters") {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -399,7 +413,23 @@ function doGet(e) {
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
-    const { voterId, memberName, answer } = data; // voterId here represents the unique VANID string
+
+    // NEW: action=addMember — creates a new member column across all three tabs
+    if (data.action === "addMember") {
+      const newName = String(data.name || "").trim();
+      if (!newName) {
+        return jsonResponse({ success: false, error: "Name is required." });
+      }
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheet = ss.getSheetByName(SHEET_NAME);
+      const col = findOrCreateMemberColumn(sheet, newName);
+      if (!col) {
+        return jsonResponse({ success: false, error: "Could not create column for " + newName });
+      }
+      return jsonResponse({ success: true, name: newName });
+    }
+
+    const { voterId, memberName, answer } = data;
 
     // 1. Validate incoming answer values (allowing "" for Undo operations)
     const validAnswers = ["Y", "N", "KO", ""];
