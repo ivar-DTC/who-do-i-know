@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Woodstock DTC · Neighbor Network · About</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #497AD2;
+    --blue: #2a4494;
+    --gold: #FFC13A;
+    --cream: #EFF5FB;
+    --sage: #7a9e7e;
+    --light: #EFF5FB;
+    --mid: #e8e2d6;
+    --text: #2c2c2c;
+    --muted: #7a7468;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-img {
+    height: 64px;
+    width: auto;
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .logo-text span {
+    display: block;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: #e2e8f0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* MAIN */
+  main {
+    flex: 1;
+    padding: 56px 24px 64px;
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* PAGE TITLE */
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--navy);
+    margin-bottom: 8px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .page-subtitle {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 48px;
+    animation: fadeUp 0.4s ease 0.05s both;
+  }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 40px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .section:nth-child(3) { animation-delay: 0.1s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+  .section:nth-child(5) { animation-delay: 0.2s; }
+
+  .section-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--navy);
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+
+  .section p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .section p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--mid);
+    margin: 40px 0;
+  }
+
+  /* HOW IT WORKS STEPS */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 4px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 16px 20px;
+  }
+
+  .step-badge {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    margin-top: 1px;
+  }
+
+  .step-badge.know { background: #e8f5ec; }
+  .step-badge.know-of { background: #fff8e6; }
+  .step-badge.dont-know { background: #f5f0e8; }
+
+  .step-text strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .step-text span {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* FOOTER NOTE */
+  .help-note {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 20px 24px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+    animation: fadeUp 0.4s ease 0.25s both;
+  }
+
+  .help-note a {
+    color: var(--navy);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .help-note a:hover {
+    color: var(--blue);
+  }
+
+  /* BACK BUTTON */
+  .back-wrap {
+    margin-top: 48px;
+    text-align: center;
+    animation: fadeUp 0.4s ease 0.3s both;
+  }
+
+  .btn-back {
+    display: inline-block;
+    padding: 13px 32px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-back:hover { background: var(--blue); }
+  .btn-back:active { transform: scale(0.99); }
+
+  @media (max-width: 480px) {
+    header { padding: 12px 16px; }
+    main { padding: 36px 16px 48px; }
+    .page-title { font-size: 1.7rem; }
+    .logo-img { height: 44px; }
+    .logo-text { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="https://ivar-dtc.github.io/who-do-i-know/WDTC-logo.png" alt="Woodstock DTC" class="logo-img" />
+    <div class="logo-text">
+      Woodstock DTC
+      <span>Neighbor Network · About</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="page-title">About the Neighbor Network</div>
+  <p class="page-subtitle">A simple tool for mapping the connections that already exist in our community.</p>
+
+  <div class="section">
+    <div class="section-eyebrow">What it is</div>
+    <h2>You already know more of your neighbors than you think.</h2>
+    <p>The Neighbor Network is a tool that helps Woodstock DTC volunteers identify which voters in town they already have a relationship with — whether that's someone they know well, or simply a familiar face from around town.</p>
+    <p>It works like a simple card deck. You go through the voter list one name at a time and tell us whether you know that person, recognize them, or have no connection at all. That's it.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <div class="section-eyebrow">How it works</div>
+    <h2>Three simple responses for every voter.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-badge know">✓</div>
+        <div class="step-text">
+          <strong>Know them</strong>
+          <span>You have a real relationship with this person — a neighbor, a friend, someone you'd stop to talk to.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-badge know-of">◎</div>
+        <div class="step-text">
+          <strong>Know of them</strong>
+          <span>You recognize the name or face — maybe from around town, a local event, or a mutual connection — but don't know them personally.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-badge dont-know">✕</div>
+        <div class="step-text">
+          <strong>Don't know them</strong>
+          <span>No connection at all. That's a perfectly valid answer — and just as useful to know.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <div class="section-eyebrow">Why it matters</div>
+    <h2>A warm conversation is worth a dozen cold ones.</h2>
+    <p>When a DTC member reaches out to a voter they already know, that conversation is warmer and more likely to make a difference. People are far more receptive to hearing from a neighbor they trust than from a stranger at the door.</p>
+    <p>By mapping existing connections across our volunteer network, we can make sure that when it matters — before an election, during a campaign, or just in an important local conversation — the right person is doing the reaching out.</p>
+    <p>Your responses help us understand who in Woodstock is already one conversation away.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="help-note">
+    Questions or need help getting started? Reach out at <a href="mailto:help@woodstockDTC.org">help@woodstockDTC.org</a>
+  </div>
+
+  <div class="back-wrap">
+    <a href="index.html" class="btn-back">← Back to dashboard</a>
+  </div>
+
+</main>
+
+</body>
+</html>
