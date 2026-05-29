@@ -1162,24 +1162,7 @@ function saveResponse(member, voterId, answer) {
 // ─── SETUP ──────────────────────────────────────────────────────────────────
 // ─── LOAD AGES FROM SHEET ───────────────────────────────────────────────────
 // Fetch real ages from the sheet via Apps Script on page load
-(function loadAges() {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", APPS_SCRIPT_URL + "?action=ages", true);
-  xhr.onload = function() {
-    try {
-      const data = JSON.parse(xhr.responseText);
-      if (data.ages && Array.isArray(data.ages)) {
-        data.ages.forEach((age, i) => {
-          if (VOTERS[i]) VOTERS[i].age = age;
-        });
-        console.log("Ages loaded for " + data.ages.length + " voters");
-      }
-    } catch(e) {
-      console.log("Could not load ages:", e);
-    }
-  };
-  xhr.send();
-})();
+
 
 document.getElementById('member-select').addEventListener('change', function() {
   document.getElementById('start-btn').disabled = !this.value;
@@ -1321,7 +1304,7 @@ function buildCard(voter, stackPos) {
     <div class="card-name">${voter.name}</div>
     <div class="card-address">${voter.address}</div>
     <div class="card-meta">
-      ${voter.age ? `<span>Age ${voter.age}</span>` : ""}
+      ${voter.Age ? `<span>Age ${voter.Age}</span>` : ""}
     </div>
   `;
   return card;
