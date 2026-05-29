@@ -428,6 +428,69 @@ function doGet(e) {
     return jsonResponse({ success: true, member: member, roads: roadList });
   }
 
+if (action === "dashboard") {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  const lastRow = sheet.getLastRow();
+  const lastCol = sheet.getLastColumn();
+
+  // Get header row to find all member columns
+  const headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  const memberCols = [];
+  for (let c = MEMBERS_START - 1; c < headerRow.length; c++) {
+    const name = String(headerRow[c]).trim();
+    if (name && name !== "") memberCols.push({ name, colIdx: c });
+  }
+
+  // Get all voter data for member columns only
+  const totalVoters = lastRow - 1;
+  const memberData = sheet.getRange(2, MEMBERS_START, totalVoters, memberCols.length).getValues();
+
+  // Count responses per member
+  let totalResponses = 0;
+  let membersStarted = 0;
+  let membersCompleted = 0;
+
+  // Track unique connections (voters with at least one Y or KO)
+  const voterKnown = new Array(totalVoters).fill(false);
+const voterKnownOf = new Array(totalVoters).fill(false);
+
+memberCols.forEach((mem, mIdx) => {
+  let memberResponseCount = 0;
+  for (let r = 0; r < totalVoters; r++) {
+    const val = String(memberData[r][mIdx]).trim();
+    if (val !== "" && val !== "null" && val !== "undefined") {
+      memberResponseCount++;
+      totalResponses++;
+      if (val === "Y") voterKnown[r] = true;
+      if (val === "KO") voterKnownOf[r] = true;
+    }
+  }
+  if (memberResponseCount > 0) membersStarted++;
+  if (memberResponseCount === totalVoters) membersCompleted++;
+});
+
+const knownCount = voterKnown.filter(Boolean).length;
+const knownOfCount = voterKnownOf.filter((v, i) => v && !voterKnown[i]).length;
+const uniqueConnections = knownCount + knownOfCount;
+const coveragePct = totalVoters > 0
+  ? Math.round((uniqueConnections / totalVoters) * 100 * 10) / 10
+  : 0;
+ 
+ 
+ return jsonResponse({
+  success: true,
+  totalVoters,
+  totalResponses,
+  uniqueConnections,
+  coveragePct,
+  knownCount,
+  knownOfCount,
+  membersStarted,
+  membersCompleted
+});
+
+}
   return jsonResponse({ status: "error", message: "Unknown API route invocation parameter context." });
 }
 
