@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Woodstock DTC · Neighbor Network · Progress Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #497AD2;
+    --blue: #2a4494;
+    --gold: #FFC13A;
+    --cream: #EFF5FB;
+    --sage: #7a9e7e;
+    --red: #c0392b;
+    --light: #EFF5FB;
+    --mid: #e8e2d6;
+    --text: #2c2c2c;
+    --muted: #7a7468;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fillBar {
+    from { width: 0%; }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-img {
+    height: 64px;
+    width: auto;
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .logo-text span {
+    display: block;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: #e2e8f0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .last-updated {
+    font-size: 0.75rem;
+    color: #e2e8f0;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-refresh {
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-refresh:hover {
+    background: var(--gold);
+    color: var(--blue);
+  }
+
+  .btn-refresh:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  /* MAIN CONTENT */
+  main {
+    flex: 1;
+    padding: 48px 24px;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* HERO MESSAGE */
+  .hero {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--navy);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* STATS GRID */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 28px 24px;
+    box-shadow: 0 4px 16px rgba(26,39,68,0.06);
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .stat-card:nth-child(1) { animation-delay: 0.05s; }
+  .stat-card:nth-child(2) { animation-delay: 0.1s; }
+  .stat-card:nth-child(3) { animation-delay: 0.15s; }
+  .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+  .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 4px;
+    animation: countUp 0.4s ease both;
+  }
+
+  .stat-number.gold { color: var(--gold); }
+  .stat-number.sage { color: var(--sage); }
+
+  .stat-sublabel {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* COVERAGE SECTION */
+  .coverage-section {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 32px;
+    box-shadow: 0 4px 16px rgba(26,39,68,0.06);
+    margin-bottom: 32px;
+    animation: fadeUp 0.5s ease 0.25s both;
+  }
+
+  .coverage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+
+  .coverage-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--navy);
+  }
+
+  .coverage-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  /* STACKED PROGRESS BAR */
+  .progress-track {
+    height: 28px;
+    background: var(--light);
+    border: 1px solid var(--mid);
+    border-radius: 3px;
+    overflow: visible;
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .progress-known {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--sage);
+    border-radius: 3px 0 0 3px;
+    transition: width 1s ease;
+    animation: fillBar 1s ease both;
+  }
+
+  .progress-known-of {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: var(--gold);
+    transition: width 1s ease;
+    animation: fillBar 1s ease 0.2s both;
+  }
+
+  /* TARGET MARKERS */
+  .marker {
+    position: absolute;
+    top: -8px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    z-index: 10;
+  }
+
+  .marker-line {
+    width: 2px;
+    height: 44px;
+    background: var(--blue);
+    opacity: 0.5;
+  }
+
+  .marker-label {
+    position: absolute;
+    top: 38px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    left: 50%;
+  }
+
+  .marker-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--blue);
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px var(--blue);
+  }
+
+  /* LEGEND */
+  .progress-legend {
+    display: flex;
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .legend-dot.known { background: var(--sage); }
+  .legend-dot.known-of { background: var(--gold); }
+  .legend-dot.unknown { background: var(--mid); border: 1px solid #d0c8bc; }
+
+  /* VOLUNTEERS SECTION */
+  .volunteers-section {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 32px;
+    box-shadow: 0 4px 16px rgba(26,39,68,0.06);
+    animation: fadeUp 0.5s ease 0.3s both;
+  }
+
+  .volunteers-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .volunteer-stats {
+    display: flex;
+    gap: 16px;
+  }
+
+  .vol-stat {
+    flex: 1;
+    background: var(--light);
+    border: 1px solid var(--mid);
+    border-radius: 3px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .vol-stat .n {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--navy);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .vol-stat .n.gold { color: var(--gold); }
+  .vol-stat .n.sage { color: var(--sage); }
+
+  .vol-stat .l {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* LOADING STATE */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    gap: 16px;
+    color: var(--muted);
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--mid);
+    border-top-color: var(--navy);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  /* ERROR STATE */
+  .error-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 480px) {
+    header { padding: 12px 16px; }
+    main { padding: 24px 16px; }
+    .hero h1 { font-size: 1.6rem; }
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card { padding: 20px 16px; }
+    .stat-number { font-size: 2rem; }
+    .coverage-section, .volunteers-section { padding: 24px 16px; }
+    .volunteer-stats { flex-direction: column; }
+    .logo-img { height: 44px; }
+    .logo-text { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="https://ivar-dtc.github.io/who-do-i-know/WDTC-logo.png" alt="Woodstock DTC" class="logo-img" />
+    <div class="logo-text">
+      Woodstock DTC
+      <span>Neighbor Network · Progress</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="last-updated" id="last-updated">Loading...</span>
+    <button class="btn-refresh" id="refresh-btn" onclick="loadDashboard()">↺ Refresh</button>
+  </div>
+</header>
+
+<main id="main-content">
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading dashboard...</span>
+  </div>
+</main>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCOsKYQV1WBYvhPEMtUvnP0vfETGT65kvSEXUQJ0RJZ_T-_IzFeztpZWgViU3p9win/exec";
+
+const TARGET_PCT = 50;
+const STRETCH_PCT = 75;
+
+let secondsSinceUpdate = 0;
+let tickInterval = null;
+
+function formatNumber(n) {
+  return Number(n).toLocaleString();
+}
+
+function getHeroMessage(pct) {
+  if (pct < 20) return "We're just getting started — and already making connections.";
+  if (pct < 35) return "The network is growing. Every swipe brings us closer.";
+  if (pct < 50) return "Real momentum now. We know more of our neighbors than ever.";
+  if (pct < 75) return "Halfway there and picking up speed. This is what organizing looks like.";
+  if (pct < 90) return "Remarkable. Three quarters of Woodstock, mapped by neighbors who care.";
+  return "Historic coverage. Woodstock Democrats know their community.";
+}
+
+function startTicker() {
+  if (tickInterval) clearInterval(tickInterval);
+  secondsSinceUpdate = 0;
+  tickInterval = setInterval(() => {
+    secondsSinceUpdate++;
+    const el = document.getElementById('last-updated');
+    if (!el) return;
+    if (secondsSinceUpdate < 60) {
+      el.textContent = `Updated ${secondsSinceUpdate}s ago`;
+    } else {
+      const mins = Math.floor(secondsSinceUpdate / 60);
+      el.textContent = `Updated ${mins}m ago`;
+    }
+  }, 1000);
+}
+
+function renderDashboard(data) {
+  const {
+    totalVoters, totalResponses, uniqueConnections, coveragePct,
+    knownCount, knownOfCount, membersStarted, membersCompleted
+  } = data;
+
+  const knownPct = (knownCount / totalVoters) * 100;
+  const knownOfPct = (knownOfCount / totalVoters) * 100;
+  const unknownCount = totalVoters - uniqueConnections;
+
+  const heroMsg = getHeroMessage(coveragePct);
+
+  document.getElementById('main-content').innerHTML = `
+
+    <div class="hero">
+      <h1>${heroMsg}</h1>
+      <p>Here's where the Woodstock DTC Neighbor Network stands right now.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Responses submitted</div>
+        <div class="stat-number">${formatNumber(totalResponses)}</div>
+        <div class="stat-sublabel">volunteer reviews completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Unique connections</div>
+        <div class="stat-number sage">${formatNumber(uniqueConnections)}</div>
+        <div class="stat-sublabel">voters with at least one connection</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Known personally</div>
+        <div class="stat-number sage">${formatNumber(knownCount)}</div>
+        <div class="stat-sublabel">voters someone knows directly</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Known of</div>
+        <div class="stat-number gold">${formatNumber(knownOfCount)}</div>
+        <div class="stat-sublabel">voters someone recognizes</div>
+      </div>
+    </div>
+
+    <div class="coverage-section">
+      <div class="coverage-header">
+        <span class="coverage-title">Voter Universe Coverage</span>
+        <span class="coverage-pct">${coveragePct}%</span>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-known" style="width: ${knownPct}%"></div>
+        <div class="progress-known-of" style="width: ${knownOfPct}%; left: ${knownPct}%"></div>
+
+        <div class="marker" style="left: ${TARGET_PCT}%">
+          <div class="marker-dot"></div>
+          <div class="marker-line"></div>
+          <div class="marker-label">50% target</div>
+        </div>
+
+        <div class="marker" style="left: ${STRETCH_PCT}%">
+          <div class="marker-dot"></div>
+          <div class="marker-line"></div>
+          <div class="marker-label">75% stretch</div>
+        </div>
+      </div>
+
+      <div class="progress-legend">
+        <div class="legend-item">
+          <div class="legend-dot known"></div>
+          <span><strong>${formatNumber(knownCount)}</strong> known personally</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot known-of"></div>
+          <span><strong>${formatNumber(knownOfCount)}</strong> known of</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot unknown"></div>
+          <span><strong>${formatNumber(unknownCount)}</strong> not yet connected</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="volunteers-section">
+      <div class="volunteers-title">Volunteer Participation</div>
+      <div class="volunteer-stats">
+        <div class="vol-stat">
+          <span class="n">${membersStarted}</span>
+          <span class="l">volunteers<br>participating</span>
+        </div>
+        <div class="vol-stat">
+          <span class="n sage">${membersCompleted}</span>
+          <span class="l">full list<br>completed</span>
+        </div>
+        <div class="vol-stat">
+          <span class="n gold">${formatNumber(totalVoters)}</span>
+          <span class="l">voters in<br>the universe</span>
+        </div>
+      </div>
+    </div>
+
+  `;
+}
+
+async function loadDashboard() {
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=dashboard`);
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || 'Unknown error');
+    }
+
+    renderDashboard(data);
+    startTicker();
+
+  } catch (err) {
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-state">
+        <p>Could not load dashboard data. Please try refreshing.</p>
+        <p style="font-size:0.8rem;margin-top:8px;color:var(--muted)">${err.message}</p>
+      </div>
+    `;
+    const updated = document.getElementById('last-updated');
+    if (updated) updated.textContent = 'Failed to load';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// Auto-refresh every 60 seconds
+setInterval(loadDashboard, 60000);
+
+// Initial load
+loadDashboard();
+</script>
+</body>
+</html>
