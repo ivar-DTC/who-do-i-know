@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Woodstock DTC · Neighbor Network · Age Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #497AD2;
+    --blue: #2a4494;
+    --gold: #FFC13A;
+    --sage: #7a9e7e;
+    --light: #EFF5FB;
+    --mid: #e8e2d6;
+    --text: #2c2c2c;
+    --muted: #7a7468;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--navy);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .logo { display: flex; align-items: center; gap: 14px; }
+
+  .logo-img { height: 64px; width: auto; }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .logo-text span {
+    display: block;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: #e2e8f0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .last-updated {
+    font-size: 0.75rem;
+    color: #e2e8f0;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-refresh {
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-refresh:hover { background: var(--gold); color: var(--blue); }
+  .btn-refresh:disabled { opacity: 0.5; cursor: default; }
+
+  main {
+    flex: 1;
+    padding: 48px 24px;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .hero {
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--navy);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 580px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.5s ease 0.05s both;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 16px rgba(26,39,68,0.06);
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-sublabel {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .chart-section {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 32px;
+    box-shadow: 0 4px 16px rgba(26,39,68,0.06);
+    margin-bottom: 32px;
+    animation: fadeUp 0.5s ease 0.1s both;
+  }
+
+  .chart-header {
+    margin-bottom: 24px;
+  }
+
+  .chart-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .chart-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .insight-section {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 32px;
+    box-shadow: 0 4px 16px rgba(26,39,68,0.06);
+    animation: fadeUp 0.5s ease 0.15s both;
+  }
+
+  .insight-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .insight-card {
+    background: var(--light);
+    border: 1px solid var(--mid);
+    border-radius: 3px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+
+  .insight-bin {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .insight-rate {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .insight-bar {
+    height: 4px;
+    background: var(--mid);
+    border-radius: 2px;
+    margin: 8px 0 6px;
+    overflow: hidden;
+  }
+
+  .insight-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  .insight-detail {
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    gap: 16px;
+    color: var(--muted);
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--mid);
+    border-top-color: var(--navy);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .error-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 16px; }
+    main { padding: 24px 16px; }
+    .hero h1 { font-size: 1.6rem; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .insight-grid { grid-template-columns: 1fr 1fr; }
+    .logo-img { height: 44px; }
+    .logo-text { font-size: 1rem; }
+    .chart-section, .insight-section { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="https://ivar-dtc.github.io/who-do-i-know/WDTC-logo.png" alt="Woodstock DTC" class="logo-img" />
+    <div class="logo-text">
+      Woodstock DTC
+      <span>Neighbor Network · Age Analytics</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="last-updated" id="last-updated">Loading...</span>
+    <button class="btn-refresh" id="refresh-btn" onclick="loadData()">↺ Refresh</button>
+  </div>
+</header>
+
+<main id="main-content">
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading age data...</span>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCOsKYQV1WBYvhPEMtUvnP0vfETGT65kvSEXUQJ0RJZ_T-_IzFeztpZWgViU3p9win/exec";
+
+const COLOR_KNOWN    = "#7a9e7e";
+const COLOR_KNOWN_OF = "#FFC13A";
+const COLOR_UNKNOWN  = "#d0c8bc";
+
+let secondsSince = 0;
+let tickInterval = null;
+
+function startTicker() {
+  if (tickInterval) clearInterval(tickInterval);
+  secondsSince = 0;
+  tickInterval = setInterval(() => {
+    secondsSince++;
+    const el = document.getElementById('last-updated');
+    if (!el) return;
+    if (secondsSince < 60) {
+      el.textContent = `Updated ${secondsSince}s ago`;
+    } else {
+      el.textContent = `Updated ${Math.floor(secondsSince / 60)}m ago`;
+    }
+  }, 1000);
+}
+
+function getConnectionRate(known, knownOf, total) {
+  if (total === 0) return 0;
+  return Math.round(((known + knownOf) / total) * 100);
+}
+
+function renderPage(data) {
+  const { bins, overall, known, knownOf, unconnected } = data;
+
+  const totalVoters    = overall.reduce((a, b) => a + b, 0);
+  const totalKnown     = known.reduce((a, b) => a + b, 0);
+  const totalKnownOf   = knownOf.reduce((a, b) => a + b, 0);
+  const totalConnected = totalKnown + totalKnownOf;
+  const overallRate    = Math.round((totalConnected / totalVoters) * 100);
+
+  document.getElementById('main-content').innerHTML = `
+
+    <div class="hero">
+      <h1>Who do we know — and how old are they?</h1>
+      <p>Connection rates vary meaningfully by age group. This breakdown shows how our volunteer network maps across Woodstock's voter universe.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total voters</div>
+        <div class="stat-number">${totalVoters.toLocaleString()}</div>
+        <div class="stat-sublabel">in the universe</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Overall connection rate</div>
+        <div class="stat-number">${overallRate}%</div>
+        <div class="stat-sublabel">${totalConnected.toLocaleString()} voters with a connection</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Known personally</div>
+        <div class="stat-number">${totalKnown.toLocaleString()}</div>
+        <div class="stat-sublabel">${totalKnownOf.toLocaleString()} more known of</div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-header">
+        <div class="chart-title">Voter connections by age group</div>
+        <div class="chart-subtitle">Stacked bars show the composition of each age bin — known personally, known of, and not yet connected.</div>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:${COLOR_KNOWN}"></div>
+          <span>Known personally</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:${COLOR_KNOWN_OF}"></div>
+          <span>Known of</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:${COLOR_UNKNOWN}"></div>
+          <span>Not yet connected</span>
+        </div>
+      </div>
+      <div style="position:relative;width:100%;height:320px;">
+        <canvas id="ageChart" role="img" aria-label="Stacked bar chart showing voter connections by age group across five bins from 18-29 to 75+">
+          Age distribution data: ${bins.map((b, i) => `${b}: ${known[i]} known, ${knownOf[i]} known of, ${unconnected[i]} unconnected`).join('; ')}
+        </canvas>
+      </div>
+    </div>
+
+    <div class="insight-section">
+      <div class="insight-title">Connection rate by age group</div>
+      <div class="insight-grid" id="insight-grid"></div>
+    </div>
+
+  `;
+
+  // Build chart
+  new Chart(document.getElementById('ageChart'), {
+    type: 'bar',
+    data: {
+      labels: bins,
+      datasets: [
+        {
+          label: 'Known personally',
+          data: known,
+          backgroundColor: COLOR_KNOWN,
+          borderWidth: 0
+        },
+        {
+          label: 'Known of',
+          data: knownOf,
+          backgroundColor: COLOR_KNOWN_OF,
+          borderWidth: 0
+        },
+        {
+          label: 'Not yet connected',
+          data: unconnected,
+          backgroundColor: COLOR_UNKNOWN,
+          borderWidth: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            afterBody: function(items) {
+              const idx = items[0].dataIndex;
+              const rate = getConnectionRate(known[idx], knownOf[idx], overall[idx]);
+              return [`Connection rate: ${rate}%`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { display: false },
+          ticks: {
+            font: { family: "'DM Sans', sans-serif", size: 12 },
+            color: '#7a7468'
+          }
+        },
+        y: {
+          stacked: true,
+          grid: { color: '#e8e2d6' },
+          ticks: {
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            color: '#7a7468'
+          }
+        }
+      }
+    }
+  });
+
+  // Build insight cards
+  const grid = document.getElementById('insight-grid');
+  bins.forEach((bin, i) => {
+    const rate = getConnectionRate(known[i], knownOf[i], overall[i]);
+    const bgColor = rate >= 45 ? '#eaf3de' : rate >= 35 ? '#fff8e6' : '#fdf0ee';
+    const card = document.createElement('div');
+    card.className = 'insight-card';
+    card.style.background = bgColor;
+    card.innerHTML = `
+      <div class="insight-bin">${bin}</div>
+      <div class="insight-rate">${rate}%</div>
+      <div class="insight-bar">
+        <div class="insight-bar-fill" style="width:0%;background:#2a4494" data-width="${rate}"></div>
+      </div>
+      <div class="insight-detail">${(known[i] + knownOf[i]).toLocaleString()} of ${overall[i].toLocaleString()}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Animate insight bars after a brief delay
+  setTimeout(() => {
+    document.querySelectorAll('.insight-bar-fill').forEach(el => {
+      el.style.width = el.dataset.width + '%';
+    });
+  }, 100);
+}
+
+async function loadData() {
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=ageanalysis`);
+    const data = await response.json();
+
+    if (!data.success) throw new Error(data.error || 'Unknown error');
+
+    renderPage(data);
+    startTicker();
+
+  } catch (err) {
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-state">
+        <p>Could not load age data. Please try refreshing.</p>
+        <p style="font-size:0.8rem;margin-top:8px;color:var(--muted)">${err.message}</p>
+      </div>
+    `;
+    const updated = document.getElementById('last-updated');
+    if (updated) updated.textContent = 'Failed to load';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
