@@ -290,11 +290,9 @@
   .marker-label {
     position: absolute;
     top: 38px;
-    font-size: 0.65rem;
-    font-weight: 500;
+    font-size: 0.62rem;
+    font-weight: 600;
     color: var(--blue);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
     white-space: nowrap;
     transform: translateX(-50%);
     left: 50%;
@@ -454,8 +452,12 @@
 <script>
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCOsKYQV1WBYvhPEMtUvnP0vfETGT65kvSEXUQJ0RJZ_T-_IzFeztpZWgViU3p9win/exec";
 
-const TARGET_PCT = 50;
-const STRETCH_PCT = 75;
+const ELECTION_TARGETS = [
+  { votes: 788,  label: "788" },
+  { votes: 1037, label: "1,037" },
+  { votes: 1944, label: "1,944" },
+  { votes: 2586, label: "2,586" }
+];
 
 let secondsSinceUpdate = 0;
 let tickInterval = null;
@@ -544,18 +546,15 @@ function renderDashboard(data) {
         <div class="progress-known" style="width: ${knownPct}%"></div>
         <div class="progress-known-of" style="width: ${knownOfPct}%; left: ${knownPct}%"></div>
 
-        <div class="marker" style="left: ${TARGET_PCT}%">
-          <div class="marker-dot"></div>
-          <div class="marker-line"></div>
-          <div class="marker-label">50% target</div>
-        </div>
-
-        <div class="marker" style="left: ${STRETCH_PCT}%">
-          <div class="marker-dot"></div>
-          <div class="marker-line"></div>
-          <div class="marker-label">75% stretch</div>
-        </div>
-      </div>
+       ${ELECTION_TARGETS.map(t => {
+          const pct = Math.min((t.votes / totalVoters) * 100, 100);
+          return `
+            <div class="marker" style="left: ${pct.toFixed(1)}%">
+              <div class="marker-dot"></div>
+              <div class="marker-line"></div>
+              <div class="marker-label">${t.label}</div>
+            </div>`;
+        }).join('')}
 
       <div class="progress-legend">
         <div class="legend-item">
@@ -571,6 +570,13 @@ function renderDashboard(data) {
           <span><strong>${formatNumber(unknownCount)}</strong> not yet connected</span>
         </div>
       </div>
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--mid);font-size:0.78rem;color:var(--muted);line-height:1.8;">
+      <strong style="color:var(--text);display:block;margin-bottom:6px;">What the targets mean</strong>
+      <span style="display:block"><strong style="color:var(--text)">788</strong> — enough to pass a budget referendum (approx. 18% turnout)</span>
+      <span style="display:block"><strong style="color:var(--text)">1,037</strong> — enough to win a municipal election (approx. 24% turnout)</span>
+      <span style="display:block"><strong style="color:var(--text)">1,944</strong> — enough to win a state election (approx. 45% turnout)</span>
+      <span style="display:block"><strong style="color:var(--text)">2,586</strong> — enough to win a presidential election (approx. 60% turnout)</span>
+    </div>
     </div>
 
     <div class="volunteers-section">
