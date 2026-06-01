@@ -282,7 +282,7 @@
 
   .marker-line {
     width: 2px;
-    height: 44px;
+    height: 16px;
     background: var(--blue);
     opacity: 0.5;
   }
@@ -453,10 +453,10 @@
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCOsKYQV1WBYvhPEMtUvnP0vfETGT65kvSEXUQJ0RJZ_T-_IzFeztpZWgViU3p9win/exec";
 
 const ELECTION_TARGETS = [
-  { votes: 788,  label: "788" },
-  { votes: 1037, label: "1,037" },
-  { votes: 1944, label: "1,944" },
-  { votes: 2586, label: "2,586" }
+  { votes: 788,  label: "18%" },
+  { votes: 1037, label: "24%" },
+  { votes: 1944, label: "45%" },
+  { votes: 2586, label: "60%" }
 ];
 
 let secondsSinceUpdate = 0;
@@ -573,10 +573,10 @@ function renderDashboard(data) {
       </div>
       <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--mid);font-size:0.78rem;color:var(--muted);line-height:1.8;">
       <strong style="color:var(--text);display:block;margin-bottom:6px;">What the targets mean</strong>
-      <span style="display:block"><strong style="color:var(--text)">788</strong> — enough to pass a budget referendum (approx. 18% turnout)</span>
-      <span style="display:block"><strong style="color:var(--text)">1,037</strong> — enough to win a municipal election (approx. 24% turnout)</span>
-      <span style="display:block"><strong style="color:var(--text)">1,944</strong> — enough to win a state election (approx. 45% turnout)</span>
-      <span style="display:block"><strong style="color:var(--text)">2,586</strong> — enough to win a presidential election (approx. 60% turnout)</span>
+      <span style="display:block"><strong style="color:var(--text)">18%</strong> — enough to pass a budget referendum most years</span>
+      <span style="display:block"><strong style="color:var(--text)">24%</strong> — enough to win a municipal election most years</span>
+      <span style="display:block"><strong style="color:var(--text)">45%</strong> — enough to win a state election most years</span>
+      <span style="display:block"><strong style="color:var(--text)">60%</strong> — enough to win in a presidential election year</span>
     </div>
     </div>
 
