@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Woodstock DTC · Household Coverage</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:  #497AD2;
+    --blue:  #2a4494;
+    --gold:  #FFC13A;
+    --sage:  #7a9e7e;
+    --light: #EFF5FB;
+    --mid:   #e8e2d6;
+    --text:  #2c2c2c;
+    --muted: #7a7468;
+    --red:   #c0392b;
+  }
+
+  @keyframes spin   { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fillW  { from { width: 0; } }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--navy);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+  }
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo-img { height: 64px; width: auto; }
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .logo-text span {
+    display: block;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: #e2e8f0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .header-nav { display: flex; gap: 10px; align-items: center; }
+  .nav-link {
+    padding: 6px 14px;
+    background: transparent;
+    color: #e2e8f0;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .nav-link:hover { background: rgba(255,255,255,0.1); }
+
+  main {
+    flex: 1;
+    padding: 48px 24px;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    margin-bottom: 44px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .hero-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .hero-label {
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* SUMMARY STRIP */
+  .summary-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.4s ease 0.07s both;
+  }
+  .sum-cell {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 22px 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.05);
+  }
+  .sum-cell .n {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--navy);
+    display: block;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .sum-cell .n.sage  { color: var(--sage); }
+  .sum-cell .n.gold  { color: var(--gold); }
+  .sum-cell .n.muted { color: var(--muted); }
+  .sum-cell .l {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* STACKED PROGRESS (town-wide) */
+  .town-bar-wrap {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.05);
+    animation: fadeUp 0.4s ease 0.12s both;
+  }
+  .town-bar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+  .stacked-bar {
+    height: 24px;
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+    background: var(--mid);
+    margin-bottom: 12px;
+  }
+  .bar-seg {
+    height: 100%;
+    animation: fillW 1s ease both;
+  }
+  .bar-seg.known   { background: var(--sage); }
+  .bar-seg.knownof { background: var(--gold); }
+  .bar-legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .legend-dot.known   { background: var(--sage); }
+  .legend-dot.knownof { background: var(--gold); }
+  .legend-dot.unknown { background: var(--mid); border: 1px solid #c0b8b0; }
+
+  /* CONTROLS */
+  .controls {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.04);
+    animation: fadeUp 0.4s ease 0.16s both;
+  }
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .control-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  select {
+    padding: 7px 12px;
+    border: 1px solid var(--mid);
+    border-radius: 3px;
+    background: var(--light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  select:focus { border-color: var(--navy); }
+  .results-count {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  /* ROAD TABLE */
+  .road-table-wrap {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.05);
+    animation: fadeUp 0.4s ease 0.2s both;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead tr {
+    background: var(--navy);
+  }
+  thead th {
+    padding: 12px 16px;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: white;
+    font-weight: 500;
+    text-align: left;
+  }
+  thead th.right { text-align: right; }
+  thead th.center { text-align: center; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--mid);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f7f4f0; }
+
+  td {
+    padding: 11px 16px;
+    font-size: 0.85rem;
+    vertical-align: middle;
+  }
+  td.road-name {
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  td.right { text-align: right; }
+  td.center { text-align: center; }
+
+  /* Mini stacked bar in table */
+  .mini-bar {
+    height: 10px;
+    border-radius: 2px;
+    background: var(--mid);
+    overflow: hidden;
+    display: flex;
+    min-width: 80px;
+    width: 100%;
+  }
+  .mini-seg { height: 100%; }
+  .mini-seg.known   { background: var(--sage); }
+  .mini-seg.knownof { background: var(--gold); }
+
+  /* Coverage badge */
+  .pct-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    min-width: 44px;
+    text-align: center;
+  }
+  .pct-badge.high   { background: #d4edda; color: #155724; }
+  .pct-badge.mid-hi { background: #d4edda; color: #155724; opacity: 0.75; }
+  .pct-badge.mid    { background: #fff3cd; color: #856404; }
+  .pct-badge.low    { background: #fde8e8; color: #721c24; }
+  .pct-badge.zero   { background: var(--light); color: var(--muted); border: 1px solid var(--mid); }
+
+  /* Fraction text */
+  .fraction {
+    font-size: 0.8rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* Spinner / error */
+  .loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 80px 24px;
+    color: var(--muted);
+  }
+  .spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--mid);
+    border-top-color: var(--navy);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  .error-msg {
+    text-align: center;
+    padding: 48px;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 640px) {
+    header { padding: 12px 16px; }
+    main   { padding: 24px 16px; }
+    .logo-img { height: 44px; }
+    .logo-text { font-size: 1rem; }
+    .summary-strip { grid-template-columns: repeat(2, 1fr); }
+    .hero-pct { font-size: 3.5rem; }
+    .controls { gap: 14px; }
+    .town-bar-wrap { padding: 20px 16px; }
+    thead th:nth-child(3), td:nth-child(3) { display: none; }
+  }
+
+  @media print {
+    header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .controls { display: none; }
+    .nav-link { display: none; }
+    body { background: white; }
+    .road-table-wrap { box-shadow: none; }
+    tbody tr { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="https://ivar-dtc.github.io/who-do-i-know/WDTC-logo.png" alt="Woodstock DTC" class="logo-img" />
+    <div class="logo-text">
+      Woodstock DTC
+      <span>Neighbor Network · Household Coverage</span>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html" class="nav-link">← Dashboard</a>
+    <a href="app.html"   class="nav-link">Review App</a>
+  </nav>
+</header>
+
+<main id="main-content">
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading household data…</span>
+  </div>
+</main>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby8rGdGVIqUXXQx8uojA6VZ_74HkK0eHwvZB8Lz9hIU2_JXORFw6UnY5HbP2eQUgLxv/exec";
+
+let allRoads = [];
+let sortKey  = 'pct-asc';
+let minHH    = 0;
+
+function fmt(n) { return Number(n).toLocaleString(); }
+
+function badgeClass(pct) {
+  if (pct === 0)   return 'zero';
+  if (pct < 25)    return 'low';
+  if (pct < 50)    return 'mid';
+  if (pct < 75)    return 'mid-hi';
+  return 'high';
+}
+
+function sortRoads(roads) {
+  const r = [...roads];
+  switch (sortKey) {
+    case 'pct-asc':   return r.sort((a,b) => a.pct - b.pct || a.name.localeCompare(b.name));
+    case 'pct-desc':  return r.sort((a,b) => b.pct - a.pct || a.name.localeCompare(b.name));
+    case 'total-desc':return r.sort((a,b) => b.total - a.total);
+    case 'total-asc': return r.sort((a,b) => a.total - b.total);
+    case 'alpha':     return r.sort((a,b) => a.name.localeCompare(b.name));
+    case 'unknown-desc': return r.sort((a,b) => b.unknown - a.unknown);
+  }
+  return r;
+}
+
+function filterRoads(roads) {
+  return roads.filter(r => {
+    if (r.name === 'Street Not Listed' || r.name === 'Street Not Listed Rov') return false;
+    return r.total >= minHH;
+  });
+}
+
+function renderTable() {
+  const filtered = sortRoads(filterRoads(allRoads));
+  const countEl  = document.getElementById('road-count');
+  if (countEl) countEl.textContent = `${filtered.length} road${filtered.length !== 1 ? 's' : ''}`;
+
+  const tbody = document.getElementById('road-tbody');
+  if (!tbody) return;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">No roads match this filter.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => {
+    const knownPct   = r.total > 0 ? (r.known   / r.total) * 100 : 0;
+    const knownOfPct = r.total > 0 ? (r.knownOf / r.total) * 100 : 0;
+    return `
+      <tr>
+        <td class="road-name">${r.name}</td>
+        <td class="center">
+          <div class="mini-bar">
+            <div class="mini-seg known"   style="width:${knownPct.toFixed(1)}%"></div>
+            <div class="mini-seg knownof" style="width:${knownOfPct.toFixed(1)}%"></div>
+          </div>
+        </td>
+        <td class="right"><span class="fraction">${r.connected} of ${r.total}</span></td>
+        <td class="right"><span class="fraction" style="color:var(--text)">${r.unknown}</span></td>
+        <td class="right"><span class="pct-badge ${badgeClass(r.pct)}">${r.pct}%</span></td>
+      </tr>`;
+  }).join('');
+}
+
+function renderPage(data) {
+  const { totalHouseholds, totalKnown, totalKnownOf, totalUnknown, totalConnected, coveragePct } = data;
+
+  const knownPct   = totalHouseholds > 0 ? (totalKnown   / totalHouseholds) * 100 : 0;
+  const knownOfPct = totalHouseholds > 0 ? (totalKnownOf / totalHouseholds) * 100 : 0;
+
+  document.getElementById('main-content').innerHTML = `
+
+    <div class="hero">
+      <div class="hero-pct">${coveragePct}%</div>
+      <div class="hero-label">of Woodstock households have a connection</div>
+    </div>
+
+    <div class="summary-strip">
+      <div class="sum-cell">
+        <span class="n">${fmt(totalHouseholds)}</span>
+        <span class="l">Total<br>households</span>
+      </div>
+      <div class="sum-cell">
+        <span class="n sage">${fmt(totalKnown)}</span>
+        <span class="l">Known<br>personally</span>
+      </div>
+      <div class="sum-cell">
+        <span class="n gold">${fmt(totalKnownOf)}</span>
+        <span class="l">Known<br>of</span>
+      </div>
+      <div class="sum-cell">
+        <span class="n muted">${fmt(totalUnknown)}</span>
+        <span class="l">Not yet<br>connected</span>
+      </div>
+    </div>
+
+    <div class="town-bar-wrap">
+      <div class="town-bar-title">Town-wide household coverage</div>
+      <div class="stacked-bar">
+        <div class="bar-seg known"   style="width:${knownPct.toFixed(1)}%"></div>
+        <div class="bar-seg knownof" style="width:${knownOfPct.toFixed(1)}%"></div>
+      </div>
+      <div class="bar-legend">
+        <div class="legend-item"><div class="legend-dot known"></div><strong>${fmt(totalKnown)}</strong>&nbsp;known personally</div>
+        <div class="legend-item"><div class="legend-dot knownof"></div><strong>${fmt(totalKnownOf)}</strong>&nbsp;known of</div>
+        <div class="legend-item"><div class="legend-dot unknown"></div><strong>${fmt(totalUnknown)}</strong>&nbsp;not yet connected</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <span class="control-label">Min households</span>
+        <select id="min-hh" onchange="minHH = parseInt(this.value); renderTable()">
+          <option value="0">All roads</option>
+          <option value="3">3+</option>
+          <option value="5" selected>5+</option>
+          <option value="10">10+</option>
+          <option value="20">20+</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <span class="control-label">Sort by</span>
+        <select id="sort-key" onchange="sortKey = this.value; renderTable()">
+          <option value="pct-asc">Coverage &uarr; (gaps first)</option>
+          <option value="pct-desc">Coverage &darr; (best first)</option>
+          <option value="total-desc">Households &darr; (largest first)</option>
+          <option value="total-asc">Households &uarr; (smallest first)</option>
+          <option value="unknown-desc">Most unconnected first</option>
+          <option value="alpha">Alphabetical</option>
+        </select>
+      </div>
+      <span class="results-count" id="road-count"></span>
+    </div>
+
+    <div class="road-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Road</th>
+            <th class="center" style="width:160px">Coverage</th>
+            <th class="right">Connected</th>
+            <th class="right">Unconnected</th>
+            <th class="right">%</th>
+          </tr>
+        </thead>
+        <tbody id="road-tbody"></tbody>
+      </table>
+    </div>`;
+
+  // Default filter: 5+ households
+  minHH = 5;
+  renderTable();
+}
+
+async function loadData() {
+  try {
+    const resp = await fetch(`${APPS_SCRIPT_URL}?action=households`);
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.error || 'Unknown error');
+    allRoads = data.roads;
+    renderPage(data);
+  } catch (err) {
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-msg">
+        Could not load household data. Please try refreshing.<br>
+        <span style="font-size:0.8rem;margin-top:6px;display:block">${err.message}</span>
+      </div>`;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>

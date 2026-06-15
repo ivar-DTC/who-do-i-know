@@ -100,6 +100,27 @@
     letter-spacing: 0.05em;
   }
 
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-link {
+    padding: 6px 14px;
+    background: transparent;
+    color: #e2e8f0;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .nav-link:hover { background: rgba(255,255,255,0.1); }
+
   .btn-refresh {
     padding: 6px 14px;
     background: transparent;
@@ -334,6 +355,19 @@
   .legend-dot.known-of { background: var(--gold); }
   .legend-dot.unknown { background: var(--mid); border: 1px solid #d0c8bc; }
 
+  /* HOUSEHOLD SECTION LINK */
+  .street-link {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--navy);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+  .street-link:hover { border-bottom-color: var(--navy); }
+
   /* VOLUNTEERS SECTION */
   .volunteers-section {
     background: white;
@@ -439,7 +473,10 @@
   </div>
   <div class="header-right">
     <span class="last-updated" id="last-updated">Loading...</span>
-    <button class="btn-refresh" id="refresh-btn" onclick="loadDashboard()">↺ Refresh</button>
+    <div class="header-actions">
+      <a href="about.html" class="nav-link">About</a>
+      <button class="btn-refresh" id="refresh-btn" onclick="loadDashboard()">↺ Refresh</button>
+    </div>
   </div>
 </header>
 
@@ -451,13 +488,13 @@
 </main>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCOsKYQV1WBYvhPEMtUvnP0vfETGT65kvSEXUQJ0RJZ_T-_IzFeztpZWgViU3p9win/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby8rGdGVIqUXXQx8uojA6VZ_74HkK0eHwvZB8Lz9hIU2_JXORFw6UnY5HbP2eQUgLxv/exec";
 
 const ELECTION_TARGETS = [
-  { votes: 788,  label: "18%" },
-  { votes: 1037, label: "24%" },
-  { votes: 1944, label: "45%" },
-  { votes: 2586, label: "60%" }
+  { votes: 800,  label: "~800" },
+  { votes: 1100, label: "~1,100" },
+  { votes: 2000, label: "~2,000" },
+  { votes: 2600, label: "~2,600" }
 ];
 
 let secondsSinceUpdate = 0;
@@ -492,7 +529,7 @@ function startTicker() {
   }, 1000);
 }
 
-function renderDashboard(data) {
+function renderDashboard(data, hh) {
   const {
     totalVoters, totalResponses, uniqueConnections, coveragePct,
     knownCount, knownOfCount, membersStarted, membersCompleted
@@ -572,14 +609,44 @@ function renderDashboard(data) {
           <span><strong>${formatNumber(unknownCount)}</strong> not yet connected</span>
         </div>
       </div>
+
       <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--mid);font-size:0.78rem;color:var(--muted);line-height:1.8;">
       <strong style="color:var(--text);display:block;margin-bottom:6px;">What the targets mean</strong>
-      <span style="display:block"><strong style="color:var(--text)">18%</strong> — enough to pass a budget referendum most years</span>
-      <span style="display:block"><strong style="color:var(--text)">24%</strong> — enough to win a municipal election most years</span>
-      <span style="display:block"><strong style="color:var(--text)">45%</strong> — enough to win a state election most years</span>
-      <span style="display:block"><strong style="color:var(--text)">60%</strong> — enough to win in a presidential election year</span>
+      <span style="display:block"><strong style="color:var(--text)">~800 votes</strong> — enough to pass a budget referendum most years</span>
+      <span style="display:block"><strong style="color:var(--text)">~1,100 votes</strong> — enough to win a municipal election most years</span>
+      <span style="display:block"><strong style="color:var(--text)">~2,000 votes</strong> — enough to win a state election most years</span>
+      <span style="display:block"><strong style="color:var(--text)">~2,600 votes</strong> — enough to win in a presidential election year</span>
     </div>
     </div>
+
+    ${hh ? `
+    <div class="coverage-section household-section">
+      <div class="coverage-header">
+        <span class="coverage-title">Household Coverage</span>
+        <span class="coverage-pct">${hh.coveragePct}%</span>
+      </div>
+      <div class="progress-track" style="height:20px;">
+        <div class="progress-known" style="width: ${hh.knownPct}%"></div>
+        <div class="progress-known-of" style="width: ${hh.knownOfPct}%; left: ${hh.knownPct}%"></div>
+      </div>
+      <div class="progress-legend">
+        <div class="legend-item">
+          <div class="legend-dot known"></div>
+          <span><strong>${formatNumber(hh.totalKnown)}</strong> known personally</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot known-of"></div>
+          <span><strong>${formatNumber(hh.totalKnownOf)}</strong> known of</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot unknown"></div>
+          <span><strong>${formatNumber(hh.totalUnknown)}</strong> not yet connected</span>
+        </div>
+      </div>
+      <div style="margin-top:20px;text-align:right;">
+        <a href="households.html" class="street-link">See coverage by street →</a>
+      </div>
+    </div>` : ''}
 
     <div class="volunteers-section">
       <div class="volunteers-title">Volunteer Participation</div>
@@ -607,14 +674,33 @@ async function loadDashboard() {
   if (btn) btn.disabled = true;
 
   try {
-    const response = await fetch(`${APPS_SCRIPT_URL}?action=dashboard`);
-    const data = await response.json();
+    // Voter-level (required) and household-level (optional) in parallel.
+    const [dashResp, hhResp] = await Promise.allSettled([
+      fetch(`${APPS_SCRIPT_URL}?action=dashboard`).then(r => r.json()),
+      fetch(`${APPS_SCRIPT_URL}?action=households`).then(r => r.json())
+    ]);
 
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error');
+    if (dashResp.status !== 'fulfilled' || !dashResp.value || !dashResp.value.success) {
+      throw new Error((dashResp.value && dashResp.value.error) || 'Could not load dashboard data.');
+    }
+    const data = dashResp.value;
+
+    // Build the compact household summary if that call succeeded.
+    let hh = null;
+    if (hhResp.status === 'fulfilled' && hhResp.value && hhResp.value.success) {
+      const h = hhResp.value;
+      const total = h.totalHouseholds || 0;
+      hh = {
+        coveragePct: h.coveragePct,
+        totalKnown: h.totalKnown || 0,
+        totalKnownOf: h.totalKnownOf || 0,
+        totalUnknown: h.totalUnknown || 0,
+        knownPct:   total > 0 ? ((h.totalKnown   || 0) / total) * 100 : 0,
+        knownOfPct: total > 0 ? ((h.totalKnownOf || 0) / total) * 100 : 0
+      };
     }
 
-    renderDashboard(data);
+    renderDashboard(data, hh);
     startTicker();
 
   } catch (err) {

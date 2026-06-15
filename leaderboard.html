@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Woodstock DTC · Volunteer Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:  #497AD2;
+    --blue:  #2a4494;
+    --gold:  #FFC13A;
+    --sage:  #7a9e7e;
+    --light: #EFF5FB;
+    --mid:   #e8e2d6;
+    --text:  #2c2c2c;
+    --muted: #7a7468;
+    --red:   #c0392b;
+  }
+
+  @keyframes spin   { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--navy);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+  }
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo-img { height: 64px; width: auto; }
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .logo-text span {
+    display: block;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: #e2e8f0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .header-nav { display: flex; gap: 10px; align-items: center; }
+  .nav-link {
+    padding: 6px 14px;
+    background: transparent;
+    color: #e2e8f0;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .nav-link:hover { background: rgba(255,255,255,0.1); }
+  .btn-refresh {
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-refresh:hover { background: var(--gold); color: var(--blue); }
+  .btn-refresh:disabled { opacity: 0.5; cursor: default; }
+
+  main {
+    flex: 1;
+    padding: 44px 24px;
+    max-width: 920px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* COLLECTIVE BANNER — the signature element: totals as a sentence,
+     not a scoreboard. Frames the page as shared accomplishment. */
+  .together {
+    background: var(--navy);
+    color: white;
+    border-radius: 6px;
+    padding: 36px 40px;
+    margin-bottom: 40px;
+    border-left: 5px solid var(--gold);
+    animation: fadeUp 0.4s ease both;
+  }
+  .together-eyebrow {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .together-line {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    line-height: 1.45;
+    font-weight: 400;
+  }
+  .together-line strong {
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .together-line { font-size: 1.3rem; }
+  }
+
+  /* SECTION HEADING */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.4s ease 0.08s both;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--navy);
+  }
+  .section-hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  /* TABLE */
+  .table-wrap {
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 6px;
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.05);
+    animation: fadeUp 0.4s ease 0.12s both;
+  }
+  table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  thead tr { background: var(--navy); }
+  thead th {
+    padding: 13px 16px;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+    font-weight: 500;
+    text-align: right;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  thead th:first-child { text-align: left; }
+  thead th.rank-col { text-align: center; cursor: default; width: 44px; }
+  thead th:hover:not(.rank-col):not(.name-col) { background: var(--blue); }
+  thead th .arrow {
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 0.7rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  thead th.sorted .arrow { opacity: 1; color: var(--gold); }
+  thead th.name-col { cursor: pointer; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--mid);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f7f4f0; }
+
+  td {
+    padding: 13px 16px;
+    font-size: 0.88rem;
+    text-align: right;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  td.rank {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    width: 44px;
+  }
+  td.rank.top1 { color: var(--gold); font-weight: 700; }
+  td.name {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text);
+    white-space: normal;
+  }
+  td .lead-val { font-weight: 700; color: var(--navy); }
+  td .sub { color: var(--muted); }
+
+  /* the column currently sorted gets a faint highlight */
+  td.active-col { background: rgba(122,158,126,0.08); }
+  tbody tr:hover td.active-col { background: rgba(122,158,126,0.14); }
+
+  /* Spinner / error / empty */
+  .loading-state {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; padding: 80px 24px; color: var(--muted);
+  }
+  .spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--mid);
+    border-top-color: var(--navy);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  .error-msg, .empty-msg {
+    text-align: center; padding: 48px; color: var(--muted); font-size: 0.9rem;
+  }
+
+  @media (max-width: 640px) {
+    header { padding: 12px 16px; }
+    main   { padding: 24px 16px; }
+    .logo-img { height: 44px; }
+    .logo-text { font-size: 1rem; }
+    .together { padding: 24px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="https://ivar-dtc.github.io/who-do-i-know/WDTC-logo.png" alt="Woodstock DTC" class="logo-img" />
+    <div class="logo-text">
+      Woodstock DTC
+      <span>Neighbor Network · Volunteers</span>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html" class="nav-link">← Dashboard</a>
+    <a href="app.html" class="nav-link">Review App</a>
+    <button class="btn-refresh" id="refresh-btn" onclick="loadBoard()">↺ Refresh</button>
+  </nav>
+</header>
+
+<main id="main-content">
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading volunteers…</span>
+  </div>
+</main>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby8rGdGVIqUXXQx8uojA6VZ_74HkK0eHwvZB8Lz9hIU2_JXORFw6UnY5HbP2eQUgLxv/exec";
+
+let members = [];
+let sortKey = 'completed';   // default rank: most completed (effort)
+let sortDir = 'desc';
+
+// column definitions: key, label, and how to render the cell
+const COLUMNS = [
+  { key: 'completed',   label: 'Completed',     hint: 'households reviewed' },
+  { key: 'known',       label: 'Known',         hint: 'know personally' },
+  { key: 'knownPlusOf', label: 'Known + of',    hint: 'all connections' },
+  { key: 'uniqueKnown', label: 'Only-known',    hint: 'people only this volunteer knows' },
+  { key: 'roadsCompleted', label: 'Roads done', hint: 'streets finished' }
+];
+
+function fmt(n) { return Number(n || 0).toLocaleString(); }
+
+function sortMembers() {
+  const arr = [...members];
+  arr.sort((a, b) => {
+    let av, bv;
+    if (sortKey === 'name') { av = a.name.toLowerCase(); bv = b.name.toLowerCase(); }
+    else { av = a[sortKey] || 0; bv = b[sortKey] || 0; }
+    let cmp = av < bv ? -1 : av > bv ? 1 : 0;
+    if (cmp === 0 && sortKey !== 'name') cmp = a.name.localeCompare(b.name); // stable tiebreak
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+  return arr;
+}
+
+function setSort(key) {
+  if (key === sortKey) {
+    sortDir = (sortDir === 'desc') ? 'asc' : 'desc';
+  } else {
+    sortKey = key;
+    sortDir = (key === 'name') ? 'asc' : 'desc'; // names A→Z, numbers high→low
+  }
+  renderTable();
+}
+
+function renderTable() {
+  const sorted = sortMembers();
+  const tbody = document.getElementById('board-tbody');
+  if (!tbody) return;
+
+  // header sort indicators
+  document.querySelectorAll('thead th[data-key]').forEach(th => {
+    const k = th.getAttribute('data-key');
+    th.classList.toggle('sorted', k === sortKey);
+    const arrow = th.querySelector('.arrow');
+    if (arrow) arrow.textContent = (sortDir === 'asc') ? '↑' : '↓';
+  });
+
+  if (sorted.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">No volunteers have started reviewing yet.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = sorted.map((m, i) => {
+    const rankCls = (i === 0 && sortDir === 'desc' && sortKey !== 'name') ? 'rank top1' : 'rank';
+    const cell = (key) => {
+      const active = key === sortKey ? ' active-col' : '';
+      return `<td class="${active}"><span class="lead-val">${fmt(m[key])}</span></td>`;
+    };
+    return `
+      <tr>
+        <td class="${rankCls}">${i + 1}</td>
+        <td class="name${sortKey === 'name' ? ' active-col' : ''}">${escapeHtml(m.name)}</td>
+        ${cell('completed')}
+        ${cell('known')}
+        ${cell('knownPlusOf')}
+        ${cell('uniqueKnown')}
+        ${cell('roadsCompleted')}
+      </tr>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function renderPage(data) {
+  members = data.members || [];
+  const t = data.totals || { completed: 0, known: 0, knownOf: 0 };
+  const connections = (t.known || 0) + (t.knownOf || 0);
+  const pc = data.participantCount || 0;
+
+  const togetherLine = pc === 0
+    ? `No one has started reviewing yet — be the first.`
+    : `Together, <strong>${fmt(pc)}</strong> ${pc === 1 ? 'volunteer has' : 'volunteers have'} reviewed
+       <strong>${fmt(t.completed)}</strong> ${t.completed === 1 ? 'neighbor' : 'neighbors'}
+       and surfaced <strong>${fmt(connections)}</strong> ${connections === 1 ? 'connection' : 'connections'}
+       across Woodstock.`;
+
+  const headerCells = COLUMNS.map(c => `
+    <th data-key="${c.key}" onclick="setSort('${c.key}')" title="${c.hint}">
+      ${c.label}<span class="arrow"></span>
+    </th>`).join('');
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="together">
+      <div class="together-eyebrow">What we've built together</div>
+      <div class="together-line">${togetherLine}</div>
+    </div>
+
+    <div class="section-head">
+      <span class="section-title">Every volunteer</span>
+      <span class="section-hint">Tap any column to rank by it. Showing everyone who has reviewed at least one household.</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="rank-col">#</th>
+            <th class="name-col" data-key="name" onclick="setSort('name')">Volunteer<span class="arrow"></span></th>
+            ${headerCells}
+          </tr>
+        </thead>
+        <tbody id="board-tbody"></tbody>
+      </table>
+    </div>
+  `;
+
+  renderTable();
+}
+
+async function loadBoard() {
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.disabled = true;
+  try {
+    const resp = await fetch(`${APPS_SCRIPT_URL}?action=leaderboard`);
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.error || 'Unknown error');
+    renderPage(data);
+  } catch (err) {
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-msg">
+        Could not load the leaderboard. Please try refreshing.<br>
+        <span style="font-size:0.8rem;margin-top:6px;display:block">${escapeHtml(err.message)}</span>
+      </div>`;
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+loadBoard();
+</script>
+</body>
+</html>

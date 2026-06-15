@@ -104,10 +104,6 @@
     animation: fadeUp 0.4s ease both;
   }
 
-  .section:nth-child(3) { animation-delay: 0.1s; }
-  .section:nth-child(4) { animation-delay: 0.15s; }
-  .section:nth-child(5) { animation-delay: 0.2s; }
-
   .section-eyebrow {
     font-size: 0.7rem;
     font-weight: 500;
@@ -143,7 +139,54 @@
     margin: 40px 0;
   }
 
-  /* HOW IT WORKS STEPS */
+  /* FLOW STEPS (how a review works) */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 4px;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: white;
+    border: 1px solid var(--mid);
+    border-radius: 4px;
+    padding: 16px 20px;
+  }
+
+  .flow-num {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+
+  .flow-text strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .flow-text span {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* HOW IT WORKS STEPS (the three responses) */
   .steps {
     display: flex;
     flex-direction: column;
@@ -269,14 +312,45 @@
     <div class="section-eyebrow">What it is</div>
     <h2>You already know more of your neighbors than you think.</h2>
     <p>The Neighbor Network is a tool that helps Woodstock DTC volunteers identify which voters in town they already have a relationship with — whether that's someone they know well, or simply a familiar face from around town.</p>
-    <p>It works like a simple card deck. You go through the voter list one name at a time and tell us whether you know that person, recognize them, or have no connection at all. That's it.</p>
+    <p>You review your neighbors one household at a time, working through a street before moving on to the next. For each home, you say whether you know the people there, recognize them, or have no connection at all. That's it.</p>
   </div>
 
   <div class="divider"></div>
 
   <div class="section">
-    <div class="section-eyebrow">How it works</div>
-    <h2>Three simple responses for every voter.</h2>
+    <div class="section-eyebrow">How a review works</div>
+    <h2>Street by street, household by household.</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text">
+          <strong>Pick your name to begin</strong>
+          <span>The app pulls up the households waiting for your review and starts you on a street. You can also tap "Pick a road" to jump to a specific street you know well.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text">
+          <strong>Take each household in turn</strong>
+          <span>You'll see everyone who lives at an address together. If you don't know anyone there, one tap marks the whole household and moves you on. If you do, open it up and answer for each person.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text">
+          <strong>Finish a street, then the next</strong>
+          <span>Your progress is shown for the street you're on. Complete it and the app rolls straight into another — your answers save as you go.</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:16px;">Already reviewed someone and need to change your answer — or want to update one person without going through a whole street? Use <strong>Update individual response</strong> to search for anyone by name or address and set how you know them.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <div class="section-eyebrow">The three responses</div>
+    <h2>Three simple responses for every neighbor.</h2>
     <div class="steps">
       <div class="step">
         <div class="step-badge know">✓</div>
